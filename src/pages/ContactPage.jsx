@@ -23,14 +23,14 @@ export const ContactPage = () => {
       <Container sx={{ py: 8 }} maxWidth="lg">
         <Grid container spacing={5}>
           {/* Contact Form */}
-          <Grid item xs={12} md={7}>
+          <Grid>
             <Paper elevation={3} sx={{ p: 4 }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
                 Envíanos un Mensaje
               </Typography>
               <Box component="form" noValidate sx={{ mt: 3 }}>
                 <Grid container spacing={2}>
-                  <Grid item xs={12} sm={6}>
+                  <Grid>
                     <TextField
                       autoComplete="name"
                       name="fullName"
@@ -41,7 +41,7 @@ export const ContactPage = () => {
                       autoFocus
                     />
                   </Grid>
-                  <Grid item xs={12} sm={6}>
+                  <Grid>
                     <TextField
                       required
                       fullWidth
@@ -51,7 +51,7 @@ export const ContactPage = () => {
                       autoComplete="email"
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid>
                     <TextField
                       required
                       fullWidth
@@ -60,7 +60,7 @@ export const ContactPage = () => {
                       name="subject"
                     />
                   </Grid>
-                  <Grid item xs={12}>
+                  <Grid>
                     <TextField
                       required
                       fullWidth
@@ -91,7 +91,7 @@ export const ContactPage = () => {
           </Grid>
 
           {/* Contact Information */}
-          <Grid item xs={12} md={5}>
+          <Grid>
             <Box sx={{ p: 2 }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
                 Información de Contacto

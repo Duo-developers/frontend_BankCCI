@@ -50,7 +50,7 @@ export const HomePage = () => {
         </Typography>
         <Grid container spacing={4} sx={{ mt: 4 }}>
           {/* Service 1: Savings Account */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
               <AccountBalanceWalletIcon sx={{ fontSize: 50, color: '#003F66' }} />
               <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>Cuentas de Ahorro</Typography>
@@ -58,7 +58,7 @@ export const HomePage = () => {
             </Paper>
           </Grid>
           {/* Service 2: Credit Cards */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
               <CreditCardIcon sx={{ fontSize: 50, color: '#003F66' }} />
               <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>Tarjetas de Crédito</Typography>
@@ -66,7 +66,7 @@ export const HomePage = () => {
             </Paper>
           </Grid>
           {/* Service 3: Investments */}
-          <Grid item xs={12} sm={4}>
+          <Grid>
             <Paper elevation={2} sx={{ p: 3, textAlign: 'center' }}>
               <TrendingUpIcon sx={{ fontSize: 50, color: '#003F66' }} />
               <Typography variant="h6" fontWeight="bold" sx={{ mt: 2 }}>Inversiones</Typography>
@@ -83,21 +83,21 @@ export const HomePage = () => {
             ¿Por qué elegir Bank CCI?
           </Typography>
           <Grid container spacing={4} sx={{ mt: 4 }}>
-            <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+            <Grid sx={{ display: 'flex', alignItems: 'flex-start' }}>
               <SecurityIcon sx={{ fontSize: 40, color: '#003F66', mr: 2 }} />
               <Box>
                 <Typography variant="h6" fontWeight="bold">Seguridad de Vanguardia</Typography>
                 <Typography>Tus datos y tu dinero están protegidos con la mejor tecnología.</Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+            <Grid sx={{ display: 'flex', alignItems: 'flex-start' }}>
               <SupportAgentIcon sx={{ fontSize: 40, color: '#003F66', mr: 2 }} />
               <Box>
                 <Typography variant="h6" fontWeight="bold">Atención 24/7</Typography>
                 <Typography>Estamos aquí para ayudarte, cuando sea que nos necesites.</Typography>
               </Box>
             </Grid>
-            <Grid item xs={12} md={4} sx={{ display: 'flex', alignItems: 'flex-start' }}>
+            <Grid sx={{ display: 'flex', alignItems: 'flex-start' }}>
               <SmartphoneIcon sx={{ fontSize: 40, color: '#003F66', mr: 2 }} />
               <Box>
                 <Typography variant="h6" fontWeight="bold">App Móvil Intuitiva</Typography>
@@ -114,7 +114,7 @@ export const HomePage = () => {
           Lo que dicen nuestros clientes
         </Typography>
         <Grid container spacing={4} sx={{ mt: 4 }}>
-          <Grid item xs={12} md={6}>
+          <Grid>
             <Paper elevation={1} sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: '#FFD915', mr: 2 }}>LC</Avatar>
@@ -123,7 +123,7 @@ export const HomePage = () => {
               <Typography variant="body1" fontStyle="italic">"Abrir mi cuenta fue increíblemente rápido y la app es muy fácil de usar. ¡El mejor banco digital!"</Typography>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={6}>
+          <Grid>
             <Paper elevation={1} sx={{ p: 3 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Avatar sx={{ bgcolor: '#FFD915', mr: 2 }}>MA</Avatar>

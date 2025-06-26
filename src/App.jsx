@@ -6,8 +6,8 @@ import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer"; 
 import { Box } from "@mui/material";
 
-export default function App() {
-  const element = useRoutes(routes);
+export const App = () => {
+  let element = useRoutes(routes);
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

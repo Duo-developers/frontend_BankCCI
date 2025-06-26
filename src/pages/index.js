@@ -1,3 +1,2 @@
-// src/pages/index.js
-export * from './HomePage';
-export * from './LoginPage';
+export { HomePage } from './HomePage';
+export { LoginPage } from './LoginPage';
