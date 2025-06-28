@@ -12,7 +12,6 @@ export const Navbar = () => {
       }}
     >
       <Toolbar>
-        {/* Box for the logo, acting as the main link to home */}
         <Box sx={{ flexGrow: 1 }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <img 
@@ -23,15 +22,12 @@ export const Navbar = () => {
           </Link>
         </Box>
 
-        {/* Navigation Links (without "Inicio") */}
         <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-          {/* The "Inicio" button has been removed */}
           <Button color="inherit" component={Link} to="/services">Servicios</Button>
           <Button color="inherit" component={Link} to="/about">Nosotros</Button>
           <Button color="inherit" component={Link} to="/contact">Contacto</Button>
         </Box>
 
-        {/* Login Button */}
         <Button
           component={Link}
           to="/login"

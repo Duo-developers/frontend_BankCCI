@@ -6,7 +6,6 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-// Importing icons from Material-UI
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import CreditCardIcon from '@mui/icons-material/CreditCard';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -16,17 +15,15 @@ import SmartphoneIcon from '@mui/icons-material/Smartphone';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
-// URLs de los recursos
 const videoUrl = 'https://res.cloudinary.com/dwc4ynoj9/video/upload/v1751090690/Video_Para_CCI_Homepage_fmiwag.mp4';
 const lauraImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373822/samples/woman-on-a-football-field.jpg';
 const marcoImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373812/samples/people/kitchen-bar.jpg';
 const carlosImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373821/samples/man-portrait.jpg';
 
-// Styled components
 const VideoBackground = styled(Box)({
   position: 'relative',
   overflow: 'hidden',
-  height: 'calc(100vh - 70px)', // Ajustado para considerar el navbar
+  height: 'calc(100vh - 70px)', 
   width: '100%',
   display: 'flex',
   alignItems: 'center',
@@ -38,7 +35,7 @@ const VideoBackground = styled(Box)({
     left: 0,
     width: '100%',
     height: '100%',
-    backgroundColor: 'rgba(0, 42, 69, 0.7)', // Color overlay con transparencia
+    backgroundColor: 'rgba(0, 42, 69, 0.7)',
     zIndex: 1,
   },
 });
@@ -112,7 +109,7 @@ const SliderArrow = styled(IconButton)(({ theme }) => ({
     opacity: 1,
   },
 }));
-// Main component for the Home Page
+
 export const HomePage = () => {
   const sliderRef = useRef();
   
@@ -161,7 +158,6 @@ export const HomePage = () => {
 
   return (
     <Box>
-      {/* 1. Hero Section with Full-screen Video Background */}
       <VideoBackground>
         <VideoElement autoPlay muted loop>
           <source src={videoUrl} type="video/mp4" />
@@ -217,7 +213,6 @@ export const HomePage = () => {
         </HeroContent>
       </VideoBackground>
 
-      {/* 2. Products/Services Section as Carousel */}
       <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
         <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
           <Typography 
@@ -261,7 +256,6 @@ export const HomePage = () => {
                 </ProductCard>
               </Box>
               
-              {/* Product 2 */}
               <Box>
                 <ProductCard>
                   <Box sx={{ 
@@ -283,7 +277,6 @@ export const HomePage = () => {
                 </ProductCard>
               </Box>
               
-              {/* Product 3 */}
               <Box>
                 <ProductCard>
                   <Box sx={{ 
@@ -305,7 +298,6 @@ export const HomePage = () => {
                 </ProductCard>
               </Box>
               
-              {/* Product 4 - Extra option */}
               <Box>
                 <ProductCard>
                   <Box sx={{ 
@@ -338,7 +330,6 @@ export const HomePage = () => {
         </Container>
       </Box>
       
-      {/* 3. "Why Choose Us" Section */}
       <Box sx={{ py: 6 }}>
         <Container maxWidth="lg">
           <Typography 
@@ -396,7 +387,6 @@ export const HomePage = () => {
         </Container>
       </Box>
 
-      {/* 4. Testimonials Section with Images as Carousel */}
       <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
         <Container maxWidth="lg">
           <Typography 
@@ -471,7 +461,6 @@ export const HomePage = () => {
                 </TestimonialCard>
               </Box>
               
-              {/* Testimonial de Carlos con la nueva imagen */}
               <Box sx={{ px: 2 }}>
                 <TestimonialCard elevation={3}>
                   <Box 
@@ -506,7 +495,6 @@ export const HomePage = () => {
         </Container>
       </Box>
 
-      {/* 5. Final Call to Action Section */}
       <Box 
         sx={{ 
           bgcolor: '#011B2F', 
