@@ -2,7 +2,7 @@ import React from "react";
 import { useRoutes, useLocation } from "react-router-dom";
 import { Toaster } from "react-hot-toast";
 import { routes } from "./routes.jsx";
-import { Navbar } from "./components/Navbar"; 
+import { Navbar } from "./components/navbar/Navbar.jsx"; 
 import { Footer } from "./components/Footer"; 
 import { Box } from "@mui/material";
 

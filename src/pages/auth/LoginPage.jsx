@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container, Typography, Paper } from '@mui/material';
-import Login from '../components/Login';
+import Login from '../../components/Login.jsx'; 
 
 export const LoginPage = () => {
   return (

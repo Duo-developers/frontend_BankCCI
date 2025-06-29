@@ -1,20 +1,17 @@
 import React from 'react';
 import { Box, Container, Typography, Grid, TextField, Button, Paper } from '@mui/material';
 
-// --- Iconos para la página ---
-import SupportAgentIcon from '@mui/icons-material/SupportAgent'; // Icono principal
+import SupportAgentIcon from '@mui/icons-material/SupportAgent'; 
 import PhoneIcon from '@mui/icons-material/Phone';
 import EmailIcon from '@mui/icons-material/Email';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
-import SendIcon from '@mui/icons-material/Send'; // Icono para el botón de enviar
+import SendIcon from '@mui/icons-material/Send'; 
 
-// URL de la imagen de fondo para el encabezado
 const headerImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751089409/habilidades-call-center_e9bs3t.jpg';
 
 export const ContactPage = () => {
   return (
     <Box>
-      {/* 1. Encabezado con Imagen de Fondo y Transparencia */}
       <Box 
         sx={{ 
           color: 'white', 
@@ -24,7 +21,6 @@ export const ContactPage = () => {
           backgroundImage: `url(${headerImageUrl})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
-          // Efecto de superposición para transparencia
           '&::before': {
             content: '""',
             position: 'absolute',
@@ -32,7 +28,7 @@ export const ContactPage = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 42, 69, 0.65)', // Azul oscuro con 65% de opacidad
+            backgroundColor: 'rgba(0, 42, 69, 0.65)', 
             zIndex: 1,
           },
           '> *': {
@@ -52,11 +48,9 @@ export const ContactPage = () => {
         </Container>
       </Box>
 
-      {/* Main Content */}
       <Container sx={{ py: 8 }} maxWidth="lg">
         <Grid container spacing={5} alignItems="flex-start">
           
-          {/* Columna del Formulario de Contacto */}
           <Grid item xs={12} md={7}>
             <Paper elevation={3} sx={{ p: { xs: 2, md: 4 } }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom>
@@ -126,7 +120,6 @@ export const ContactPage = () => {
             </Paper>
           </Grid>
 
-          {/* Columna de la Información de Contacto */}
           <Grid item xs={12} md={5}>
             <Box sx={{ p: { xs: 0, md: 2 }, mt: { xs: 4, md: 0 } }}>
               <Typography variant="h5" fontWeight="bold" gutterBottom>

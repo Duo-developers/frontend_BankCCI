@@ -107,7 +107,6 @@ export const PrivacyPolicyPage = () => {
             </Grid>
           </Box>
           
-          {/* Otras secciones con el mismo estilo para consistencia */}
           <Box sx={{ my: 4 }}>
             <Typography variant="h5" component="h2" gutterBottom fontWeight="bold">
               <ShareIcon sx={{ verticalAlign: 'middle', mr: 1, color: '#003F66' }} /> 3. Cómo Compartimos su Información

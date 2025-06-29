@@ -15,7 +15,7 @@ export const Navbar = () => {
         <Box sx={{ flexGrow: 1 }}>
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <img 
-              src="/banck_CCI_sinfondo-removebg.png" 
+              src="https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751093545/banck_CCI_sinfondo-removebg_gdhpkm.png" 
               alt="Bank CCI Logo" 
               style={{ height: '40px', cursor: 'pointer' }} 
             />

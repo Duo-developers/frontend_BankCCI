@@ -1,9 +1,9 @@
-import { HomePage } from "./pages/HomePage.jsx"; 
-import { LoginPage } from "./pages/LoginPage.jsx";
-import { AboutUsPage } from "./pages/AboutUsPage.jsx";
-import { ContactPage } from "./pages/ContactPage.jsx";
-import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage.jsx";
-import { TermsOfServicePage } from "./pages/TermsOfServicePage.jsx";
+import { HomePage } from "./pages/homePage/HomePage.jsx"; 
+import { LoginPage } from "./pages/auth/LoginPage.jsx";
+import { AboutUsPage } from "./pages/basicInformation/AboutUsPage.jsx";
+import { ContactPage } from "./pages/basicInformation/ContactPage.jsx";
+import { PrivacyPolicyPage } from "./pages/basicInformation/PrivacyPolicyPage.jsx";
+import { TermsOfServicePage } from "./pages/basicInformation/TermsOfServicePage.jsx";
 
 export const routes = [
   {path: "/",element: <HomePage />},
