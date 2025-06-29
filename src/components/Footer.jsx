@@ -18,7 +18,6 @@ export const Footer = () => {
           © {new Date().getFullYear()} Bank CCI. Todos los derechos reservados.
         </Typography>
         <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-          {/* AQUÍ ESTÁ EL CAMBIO */}
           <MuiLink component={RouterLink} to="/privacy-policy" color="inherit" sx={{ mx: 1.5 }}>
             Política de Privacidad
           </MuiLink>

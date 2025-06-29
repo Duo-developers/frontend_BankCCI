@@ -1,136 +1,164 @@
 import React, { useState } from "react";
-import useLogin from "../shared/hooks/useLogin";
-import { validateEmail, validateEmailMessage, validatePassword, validatePasswordMessage } from "../shared/validators";
-import { 
+import PropTypes from "prop-types";
+import {
   Box,
   TextField,
   Button,
   Typography,
-  InputAdornment,
-  IconButton,
-  Alert
-} from '@mui/material';
-import EmailIcon from '@mui/icons-material/Email';
-import LockIcon from '@mui/icons-material/Lock';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+  Paper,
+  Container
+} from "@mui/material";
+import {
+  validateEmail,
+  validatePassword,
+  validateEmailMessage,
+  validatePasswordMessage,
+} from "../shared/validators";
+import { useLogin } from "../shared/hooks/useLogin";
 
-const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [formError, setFormError] = useState("");
-  const { handleLogin, loading, error } = useLogin();
+export const Login = ({ switchAuthHandler }) => {
+  const { login, isLoading } = useLogin();
 
-  const onSubmit = async (e) => {
-    e.preventDefault();
-    setFormError("");
-    if (!validateEmail(email)) {
-      setFormError(validateEmailMessage);
-      return;
-    }
-    if (!validatePassword(password)) {
-      setFormError(validatePasswordMessage);
-      return;
-    }
-    await handleLogin(email, password);
+  const [formState, setFormState] = useState({
+    email: {
+      value: "",
+      isValid: false,
+      showError: false,
+    },
+    password: {
+      value: "",
+      isValid: false,
+      showError: false,
+    },
+  });
+
+  const handleInputValueChange = (value, field) => {
+    setFormState((prevState) => ({
+      ...prevState,
+      [field]: {
+        ...prevState[field],
+        value,
+      },
+    }));
   };
 
+  const handleInputValidationOnBlur = (value, field) => {
+    let isValid = false;
+    switch (field) {
+      case "email":
+        isValid = validateEmail(value);
+        break;
+      case "password":
+        isValid = validatePassword(value);
+        break;
+      default:
+        break;
+    }
+    setFormState((prevState) => ({
+      ...prevState,
+      [field]: {
+        ...prevState[field],
+        isValid,
+        showError: !isValid,
+      },
+    }));
+  };
+
+  const handleLogin = (event) => {
+    event.preventDefault();
+    login(formState.email.value, formState.password.value);
+  };
+
+  const isSubmitDisabled =
+    isLoading || !formState.email.isValid || !formState.password.isValid;
+
   return (
-    <Box component="form" onSubmit={onSubmit} sx={{ width: '100%' }}>
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="email"
-        label="Email"
-        name="email"
-        autoComplete="email"
-        autoFocus
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <EmailIcon sx={{ color: 'text.secondary' }} />
-            </InputAdornment>
-          ),
-        }}
-        sx={{
-          mb: 3,
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '4px',
-          }
-        }}
-      />
-      
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        name="password"
-        label="Contraseña"
-        type={showPassword ? 'text' : 'password'}
-        id="password"
-        autoComplete="current-password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <LockIcon sx={{ color: 'text.secondary' }} />
-            </InputAdornment>
-          ),
-          endAdornment: (
-            <InputAdornment position="end">
-              <IconButton
-                aria-label="toggle password visibility"
-                onClick={() => setShowPassword(!showPassword)}
-                edge="end"
-              >
-                {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
-              </IconButton>
-            </InputAdornment>
-          )
-        }}
-        sx={{
-          mb: 3,
-          '& .MuiOutlinedInput-root': {
-            borderRadius: '4px',
-          }
-        }}
-      />
-      
-      {(formError || error) && (
-        <Alert severity="error" sx={{ mb: 2 }}>
-          {formError || error}
-        </Alert>
-      )}
-      
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        disabled={loading}
-        sx={{
-          py: 1.5,
-          backgroundColor: '#FFD915',
-          color: '#002A45',
-          fontWeight: 'bold',
-          fontSize: '1rem',
-          '&:hover': {
-            backgroundColor: '#FFD358',
-          },
-          '&.Mui-disabled': {
-            backgroundColor: '#f5f5f5',
-            color: '#9e9e9e',
-          }
-        }}
-      >
-        {loading ? "Cargando..." : "Ingresar"}
-      </Button>
-    </Box>
+    <Container maxWidth="sm" sx={{ mt: 8 }}>
+      <Paper elevation={3} sx={{ 
+        p: 4, 
+        borderRadius: 1,
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+      }}>
+        <Box sx={{ 
+          display: 'flex', 
+          flexDirection: 'column', 
+          alignItems: 'center',
+          mb: 4
+        }}>
+          <Box 
+            component="img"
+            src="https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751093545/banck_CCI_sinfondo-removebg_gdhpkm.png"
+            alt="Bank CCI Logo"
+            sx={{ height: 60, mb: 2 }}
+          />
+          <Typography variant="h5" component="h1" fontWeight="500">
+            Iniciar sesión
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Bienvenido, por favor inicia sesión para continuar
+          </Typography>
+        </Box>
+
+        <Box component="form" onSubmit={handleLogin}>
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Email"
+            name="email"
+            type="text"
+            value={formState.email.value}
+            onChange={(e) => handleInputValueChange(e.target.value, "email")}
+            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "email")}
+            error={formState.email.showError}
+            helperText={formState.email.showError ? validateEmailMessage : ""}
+            sx={{ mb: 2 }}
+          />
+          
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Contraseña"
+            name="password"
+            type="password"
+            value={formState.password.value}
+            onChange={(e) => handleInputValueChange(e.target.value, "password")}
+            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "password")}
+            error={formState.password.showError}
+            helperText={formState.password.showError ? validatePasswordMessage : ""}
+            sx={{ mb: 3 }}
+          />
+          
+          <Button
+            type="submit"
+            fullWidth
+            variant="contained"
+            disabled={isSubmitDisabled}
+            sx={{
+              py: 1.5,
+              textTransform: 'none',
+              fontWeight: 500,
+              fontSize: '0.9rem'
+            }}
+          >
+            {isLoading ? "Cargando..." : "Iniciar sesión"}
+          </Button>
+          
+          <Box sx={{ mt: 3, textAlign: 'center' }}>
+            <Typography 
+              variant="body2" 
+              color="primary"
+              onClick={switchAuthHandler}
+              sx={{ cursor: 'pointer' }}
+            >
+              ¿No tienes cuenta aún? Regístrate aquí
+            </Typography>
+          </Box>
+        </Box>
+      </Paper>
+    </Container>
   );
 };
 
-export default Login;
+Login.propTypes = {
+  switchAuthHandler: PropTypes.func.isRequired,
+};

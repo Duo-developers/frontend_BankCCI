@@ -1,7 +1,9 @@
 export const validatePassword = (password) => {
-    const regex = /^(?=.*[A-Z]).{6,}$/;
-
+    if (!password) return false;
+    
+    if (typeof password !== 'string') return false;
+    
+    const regex = /^\S{6,12}$/;
     return regex.test(password);
-}
+};
 
-export const validatePasswordMessage = 'Invalid password format. Password must be at least 6 characters long and contain at least one uppercase letter.';
