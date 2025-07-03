@@ -10,7 +10,7 @@ export const App = () => {
   let element = useRoutes(routes);
   const location = useLocation();
   
-  const isLoginPage = location.pathname === '/login'; 
+  const isLoginPage = location.pathname === '/auth'; 
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>

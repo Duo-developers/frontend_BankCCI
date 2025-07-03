@@ -189,7 +189,7 @@ export const HomePage = () => {
             </Typography>
             <Button 
               component={RouterLink}
-              to="/login"
+              to="/auth"
               variant="contained" 
               size="large"
               sx={{
@@ -513,7 +513,7 @@ export const HomePage = () => {
           </Typography>
           <Button 
             component={RouterLink}
-            to="/login"
+            to="/auth"
             variant="contained" 
             size="large"
             sx={{

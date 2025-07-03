@@ -30,7 +30,7 @@ export const Navbar = () => {
 
         <Button
           component={Link}
-          to="/login"
+          to="/auth"
           variant="contained"
           sx={{
             backgroundColor: '#FFD915',
