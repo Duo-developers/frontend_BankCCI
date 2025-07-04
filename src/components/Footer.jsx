@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Container, Typography, Link as MuiLink } from '@mui/material';
-import { Link as RouterLink } from 'react-router-dom'; // <-- IMPORTA EL LINK DEL ROUTER
+import { Link as RouterLink } from 'react-router-dom'; 
 
 export const Footer = () => {
   return (

@@ -2,7 +2,7 @@ import React from 'react';
 import { AppBar, Toolbar, Button, Box } from '@mui/material';
 import { Link } from 'react-router-dom';
 
-export const Navbar = () => {
+export const Navbar = (role) => {
   return (
     <AppBar 
       position="sticky"

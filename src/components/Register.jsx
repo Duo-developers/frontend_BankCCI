@@ -1,197 +1,211 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
+import React, { useState } from 'react';
 import {
   Box,
   TextField,
   Button,
   Typography,
   Paper,
-  Container
+  Container,
+  Grid
 } from "@mui/material";
-import {
-  validateEmail,
-  validatePassword,
-  validateUsername, 
-  validateEmailMessage,
-  validatePasswordMessage,
-  validateUsernameMessage 
-} from "../shared/validators";
-import { useRegister } from "../shared/hooks/useRegister"; 
+import { useRegister } from "../shared/hooks/useRegister";
 
+const Register = ({ switchAuthHandler }) => {
+    const { register, isLoading } = useRegister();
+    
+    const [formData, setFormData] = useState({
+        username: '',
+        name: '',
+        email: '',
+        password: '',
+        dpi: '',
+        address: '',
+        phone: '',
+        workName: '',
+        monthlyIncome: ''
+    });
 
-export const Register = ({ switchAuthHandler }) => {
-  const { register, isLoading } = useRegister();
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
-  const [formState, setFormState] = useState({
-    email: {
-      value: "",
-      isValid: false,
-      showError: false,
-    },
-    password: {
-      value: "",
-      isValid: false,
-      showError: false,
-    },
-    username: {
-      value: "",
-      isValid: false,
-      showError: false,
-    },
-  });
+    const handleRegister = async (e) => {
+        e.preventDefault();
+        await register(formData);
+    };
 
-  const handleInputValueChange = (value, field) => {
-    setFormState((prevState) => ({
-      ...prevState,
-      [field]: {
-        ...prevState[field],
-        value,
-      },
-    }));
-  };
+    return (
+        <Container maxWidth="sm" sx={{ mt: 8 }}>
+            <Paper elevation={3} sx={{ 
+                p: 4, 
+                borderRadius: 1,
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            }}>
+                <Box sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'column', 
+                    alignItems: 'center',
+                    mb: 4
+                }}>
+                    <Box 
+                        component="img"
+                        src="https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751093545/banck_CCI_sinfondo-removebg_gdhpkm.png"
+                        alt="Bank CCI Logo"
+                        sx={{ height: 60, mb: 2 }}
+                    />
+                    <Typography variant="h5" component="h1" fontWeight="500">
+                        Crear una cuenta nueva
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                        Completa todos los campos para registrarte
+                    </Typography>
+                </Box>
 
-  const handleInputValidationOnBlur = (value, field) => {
-    let isValid = false;
-    switch (field) {
-      case "email":
-        isValid = validateEmail(value);
-        break;
-      case "password":
-        isValid = validatePassword(value);
-        break;
-      case "username":
-        isValid = validateUsername(value);
-        break;
-      default:
-        break;
-    }
-    setFormState((prevState) => ({
-      ...prevState,
-      [field]: {
-        ...prevState[field],
-        isValid,
-        showError: !isValid,
-      },
-    }));
-  };
+                <Box component="form" onSubmit={handleRegister}>
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Nombre de usuario"
+                                name="username"
+                                value={formData.username}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Nombre Completo"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                    </Grid>
 
-  const handleRegister = (event) => {
-    event.preventDefault();
-    register(
-      formState.email.value, 
-      formState.password.value, 
-      formState.username.value
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Correo electrónico"
+                        name="email"
+                        type="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Contraseña"
+                        name="password"
+                        type="password"
+                        value={formData.password}
+                        onChange={handleChange}
+                        required
+                        helperText="La contraseña debe tener al menos 8 caracteres (Ej: Password123!)"
+                    />
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="DPI (13 dígitos)"
+                                name="dpi"
+                                value={formData.dpi}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Teléfono"
+                                name="phone"
+                                value={formData.phone}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                    </Grid>
+
+                    <TextField
+                        fullWidth
+                        margin="normal"
+                        label="Dirección"
+                        name="address"
+                        value={formData.address}
+                        onChange={handleChange}
+                        required
+                    />
+
+                    <Grid container spacing={2}>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Lugar de trabajo"
+                                name="workName"
+                                value={formData.workName}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                        <Grid item xs={12} sm={6}>
+                            <TextField
+                                fullWidth
+                                label="Ingresos Mensuales"
+                                name="monthlyIncome"
+                                type="number"
+                                value={formData.monthlyIncome}
+                                onChange={handleChange}
+                                required
+                                margin="normal"
+                            />
+                        </Grid>
+                    </Grid>
+                    
+                    <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        disabled={isLoading}
+                        sx={{
+                            mt: 3,
+                            mb: 2,
+                            py: 1.5,
+                            textTransform: 'none',
+                            fontWeight: 500,
+                            fontSize: '0.9rem'
+                        }}
+                    >
+                        {isLoading ? "Registrando..." : "Crear cuenta"}
+                    </Button>
+                    
+                    <Box sx={{ mt: 2, textAlign: 'center' }}>
+                        <Typography 
+                            variant="body2" 
+                            color="primary"
+                            onClick={switchAuthHandler}
+                            sx={{ cursor: 'pointer' }}
+                        >
+                            ¿Ya tienes una cuenta? Inicia sesión aquí
+                        </Typography>
+                    </Box>
+                </Box>
+            </Paper>
+        </Container>
     );
-  };
-
-  const isSubmitDisabled =
-    isLoading || 
-    !formState.email.isValid || 
-    !formState.password.isValid || 
-    !formState.username.isValid;
-
-  return (
-    <Container maxWidth="sm" sx={{ mt: 8 }}>
-      <Paper elevation={3} sx={{ 
-        p: 4, 
-        borderRadius: 1,
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-      }}>
-        <Box sx={{ 
-          display: 'flex', 
-          flexDirection: 'column', 
-          alignItems: 'center',
-          mb: 4
-        }}>
-          <Box 
-            component="img"
-            src="https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751093545/banck_CCI_sinfondo-removebg_gdhpkm.png"
-            alt="Bank CCI Logo"
-            sx={{ height: 60, mb: 2 }}
-          />
-          <Typography variant="h5" component="h1" fontWeight="500">
-            Crear cuenta
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Regístrate para comenzar a usar nuestra plataforma
-          </Typography>
-        </Box>
-
-        <Box component="form" onSubmit={handleRegister}>
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Nombre de usuario"
-            name="username"
-            type="text"
-            value={formState.username.value}
-            onChange={(e) => handleInputValueChange(e.target.value, "username")}
-            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "username")}
-            error={formState.username.showError}
-            helperText={formState.username.showError ? validateUsernameMessage : ""}
-            sx={{ mb: 2 }}
-          />
-          
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Email"
-            name="email"
-            type="email"
-            value={formState.email.value}
-            onChange={(e) => handleInputValueChange(e.target.value, "email")}
-            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "email")}
-            error={formState.email.showError}
-            helperText={formState.email.showError ? validateEmailMessage : ""}
-            sx={{ mb: 2 }}
-          />
-          
-          <TextField
-            fullWidth
-            margin="normal"
-            label="Contraseña"
-            name="password"
-            type="password"
-            value={formState.password.value}
-            onChange={(e) => handleInputValueChange(e.target.value, "password")}
-            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "password")}
-            error={formState.password.showError}
-            helperText={formState.password.showError ? validatePasswordMessage : ""}
-            sx={{ mb: 3 }}
-          />
-          
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            disabled={isSubmitDisabled}
-            sx={{
-              py: 1.5,
-              textTransform: 'none',
-              fontWeight: 500,
-              fontSize: '0.9rem'
-            }}
-          >
-            {isLoading ? "Procesando..." : "Registrarse"}
-          </Button>
-          
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Typography 
-              variant="body2" 
-              color="primary"
-              onClick={switchAuthHandler}
-              sx={{ cursor: 'pointer' }}
-            >
-              ¿Ya tienes una cuenta? Inicia sesión aquí
-            </Typography>
-          </Box>
-        </Box>
-      </Paper>
-    </Container>
-  );
 };
 
-Register.propTypes = {
-    switchAuthHandler: PropTypes.func.isRequired,
-};
-  
+export default Register;
