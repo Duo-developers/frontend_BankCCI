@@ -1,62 +1,36 @@
-import React, { useState, useEffect } from 'react';
-import { AppBar, Toolbar, Button, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { AppBar, Toolbar, Button, Box, IconButton, Menu, MenuItem, Typography, Chip, Avatar } from '@mui/material'; // <-- 1. IMPORTACIONES AÑADIDAS
 import { Link } from 'react-router-dom';
-import axios from 'axios';
+import { useUser } from '../../shared/hooks/useUser';
 
+import MenuIcon from '@mui/icons-material/Menu';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import ContactsOutlinedIcon from '@mui/icons-material/ContactsOutlined';
+import LoginIcon from '@mui/icons-material/Login';
+import LogoutIcon from '@mui/icons-material/Logout';
+import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
+import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined';
 
 export const Navbar = () => {
-  const [userRole, setUserRole] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  
-  useEffect(() => {
-    const checkUserSession = async () => {
-      const userInfo = localStorage.getItem('usuario');
-      if (userInfo) {
-        try {
-          const parsedUser = JSON.parse(userInfo);
-          setIsLoggedIn(true);
-          setUsername(parsedUser.username);
-          
-          // Ahora intentamos obtener el rol del usuario desde la API
-          try {
-            const userData = await getCurrentUser(parsedUser.token);
-            if (userData && userData.success && userData.user) {
-              setUserRole(userData.user.role);
-              console.log('Rol del usuario obtenido:', userData.user.role);
-            } else {
-              // Fallback en caso de que la API no devuelva el rol
-              console.log('La API no devolvió el rol, usando fallback');
-              if (parsedUser.username.toLowerCase().includes('admin')) {
-                setUserRole('ADMIN_ROLE');
-              } else {
-                setUserRole('USER_ROLE');
-              }
-            }
-          } catch (error) {
-            console.error('Error obteniendo rol del usuario:', error);
-            // Fallback en caso de error
-            if (parsedUser.username.toLowerCase().includes('admin')) {
-              setUserRole('ADMIN_ROLE');
-            } else {
-              setUserRole('USER_ROLE');
-            }
-          }
-        } catch (error) {
-          console.error('Error al procesar datos del localStorage:', error);
-        }
-      }
-    };
-    
-    checkUserSession();
-  }, []);
+  const { userRole, isLoggedIn, username, logout } = useUser();
+  const [anchorEl, setAnchorEl] = useState(null);
+  const isMenuOpen = Boolean(anchorEl);
+
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem('usuario');
-    setIsLoggedIn(false);
-    setUserRole(null);
-    setUsername('');
-    window.location.href = '/'; // Redireccionar a la página principal
+    logout();
+    handleMenuClose();
+  };
+  
+  const getInitials = (name = '') => {
+    return name.charAt(0).toUpperCase();
   };
 
   return (
@@ -68,7 +42,21 @@ export const Navbar = () => {
       }}
     >
       <Toolbar>
-        <Box sx={{ flexGrow: 1 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          {isLoggedIn && (
+            <>
+              <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 1 }} onClick={handleMenuOpen}>
+                <MenuIcon />
+              </IconButton>
+              <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
+                <MenuItem onClick={handleLogout}>
+                  <LogoutIcon sx={{ mr: 1.5 }} />
+                  Cerrar Sesión
+                </MenuItem>
+              </Menu>
+            </>
+          )}
+          
           <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center' }}>
             <img 
               src="https://res.cloudinary.com/dwc4ynoj9/image/upload/v1751093545/banck_CCI_sinfondo-removebg_gdhpkm.png" 
@@ -78,91 +66,67 @@ export const Navbar = () => {
           </Link>
         </Box>
 
-        <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-          <Button color="inherit" component={Link} to="/services">Servicios</Button>
-          <Button color="inherit" component={Link} to="/about">Nosotros</Button>
-          <Button color="inherit" component={Link} to="/contact">Contacto</Button>
+        <Box sx={{ flexGrow: 1 }} />
+
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
           
-          {/* Mostrar COMPUTADORA si el rol es USER_ROLE */}
-          {userRole === 'USER_ROLE' && (
-            <Button 
-              color="inherit" 
-              component={Link} 
-              to="/computadora"
-              sx={{
-                backgroundColor: '#2196f3',
-                color: 'white',
-                marginLeft: '10px',
-                '&:hover': {
-                  backgroundColor: '#1976d2',
-                },
-              }}
-            >
-              COMPUTADORA
+          {userRole === 'ADMIN_ROLE' ? (
+            <Button color="inherit" component={Link} to="/admin/clients" startIcon={<PeopleAltOutlinedIcon />}>
+              Clientes
             </Button>
+          ) : userRole === 'USER_ROLE' ? (
+            <>
+              <Button color="inherit" component={Link} to="/transfers" startIcon={<CompareArrowsOutlinedIcon />}>
+                Transferencias
+              </Button>
+              <Button color="inherit" component={Link} to="/about" startIcon={<InfoOutlinedIcon />}>
+                Nosotros
+              </Button>
+              <Button color="inherit" component={Link} to="/contact" startIcon={<ContactsOutlinedIcon />}>
+                Contacto
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button color="inherit" component={Link} to="/about" startIcon={<InfoOutlinedIcon />}>
+                Nosotros
+              </Button>
+              <Button color="inherit" component={Link} to="/contact" startIcon={<ContactsOutlinedIcon />}>
+                Contacto
+              </Button>
+            </>
           )}
-          
-          {/* Mostrar BICICLETA si el rol es ADMIN_ROLE */}
-          {userRole === 'ADMIN_ROLE' && (
-            <Button 
-              color="inherit" 
-              component={Link} 
-              to="/bicicleta"
-              sx={{
-                backgroundColor: '#4caf50',
-                color: 'white',
-                marginLeft: '10px',
-                '&:hover': {
-                  backgroundColor: '#388e3c',
-                },
-              }}
+
+          {!isLoggedIn ? (
+            <Button
+              component={Link}
+              to="/auth"
+              variant="contained"
+              startIcon={<LoginIcon />}
+              sx={{ backgroundColor: '#FFD915', color: '#011B2F', '&:hover': { backgroundColor: '#FFD358' }, marginLeft: '20px' }}
             >
-              BICICLETA
+              Acceder
             </Button>
+          ) : (
+            <Chip
+              avatar={<Avatar sx={{ bgcolor: '#FFD915', color: '#011B2F', fontWeight: 'bold' }}>{getInitials(username)}</Avatar>}
+              label={username}
+              variant="outlined"
+              sx={{
+                color: 'white',
+                borderColor: 'rgba(255, 255, 255, 0.23)',
+                marginLeft: '20px',
+                padding: '2px',
+                '& .MuiChip-label': {
+                  fontWeight: '500'
+                },
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
+                }
+              }}
+            />
           )}
         </Box>
-
-        {/* Mostrar botón de inicio de sesión o información del usuario y cerrar sesión */}
-        {!isLoggedIn ? (
-          <Button
-            component={Link}
-            to="/auth"
-            variant="contained"
-            sx={{
-              backgroundColor: '#FFD915',
-              color: '#011B2F',
-              '&:hover': {
-                backgroundColor: '#FFD358',
-              },
-              marginLeft: '20px',
-            }}
-          >
-            Área de Clientes
-          </Button>
-        ) : (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box sx={{ 
-              color: 'white', 
-              marginRight: '15px',
-              display: { xs: 'none', sm: 'block' }
-            }}>
-              Hola, {username}
-            </Box>
-            <Button
-              onClick={handleLogout}
-              variant="contained"
-              sx={{
-                backgroundColor: '#f44336',
-                color: 'white',
-                '&:hover': {
-                  backgroundColor: '#d32f2f',
-                },
-              }}
-            >
-              Cerrar Sesión
-            </Button>
-          </Box>
-        )}
       </Toolbar>
     </AppBar>
   );

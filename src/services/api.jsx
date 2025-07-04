@@ -31,7 +31,7 @@ export const register = async (data) => {
 
 export const getCurrentUser = async () => {
     try {
-        return await apiClient.get('/user/me');
+        return await apiClient.get('/user/me/information');
     } catch (error) {
         console.error('Error al obtener datos del usuario:', error);
         return {

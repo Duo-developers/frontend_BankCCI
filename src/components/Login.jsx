@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import {
   Box,
   TextField,
@@ -9,18 +8,16 @@ import {
   Container
 } from "@mui/material";
 import {
-  validateEmail,
   validatePassword,
-  validateEmailMessage,
   validatePasswordMessage,
 } from "../shared/validators";
 import { useLogin } from "../shared/hooks/useLogin";
 
-export const Login = ({ switchAuthHandler }) => {
+export const Login = () => {
   const { login, isLoading } = useLogin();
 
   const [formState, setFormState] = useState({
-    email: {
+    emailOrUsername: {
       value: "",
       isValid: false,
       showError: false,
@@ -45,8 +42,8 @@ export const Login = ({ switchAuthHandler }) => {
   const handleInputValidationOnBlur = (value, field) => {
     let isValid = false;
     switch (field) {
-      case "email":
-        isValid = validateEmail(value);
+      case "emailOrUsername":
+        isValid = value.trim().length > 0;
         break;
       case "password":
         isValid = validatePassword(value);
@@ -66,11 +63,11 @@ export const Login = ({ switchAuthHandler }) => {
 
   const handleLogin = (event) => {
     event.preventDefault();
-    login(formState.email.value, formState.password.value);
+    login(formState.emailOrUsername.value, formState.password.value);
   };
 
   const isSubmitDisabled =
-    isLoading || !formState.email.isValid || !formState.password.isValid;
+    isLoading || !formState.emailOrUsername.isValid || !formState.password.isValid;
 
   return (
     <Container maxWidth="sm" sx={{ mt: 8 }}>
@@ -103,14 +100,14 @@ export const Login = ({ switchAuthHandler }) => {
           <TextField
             fullWidth
             margin="normal"
-            label="Email"
-            name="email"
+            label="Email o nombre de usuario"
+            name="emailOrUsername"
             type="text"
-            value={formState.email.value}
-            onChange={(e) => handleInputValueChange(e.target.value, "email")}
-            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "email")}
-            error={formState.email.showError}
-            helperText={formState.email.showError ? validateEmailMessage : ""}
+            value={formState.emailOrUsername.value}
+            onChange={(e) => handleInputValueChange(e.target.value, "emailOrUsername")}
+            onBlur={(e) => handleInputValidationOnBlur(e.target.value, "emailOrUsername")}
+            error={formState.emailOrUsername.showError}
+            helperText={formState.emailOrUsername.showError ? "Este campo es obligatorio" : ""}
             sx={{ mb: 2 }}
           />
           
@@ -142,13 +139,8 @@ export const Login = ({ switchAuthHandler }) => {
           >
             {isLoading ? "Cargando..." : "Iniciar sesión"}
           </Button>
-          
         </Box>
       </Paper>
     </Container>
   );
-};
-
-Login.propTypes = {
-  switchAuthHandler: PropTypes.func.isRequired,
 };
