@@ -28,3 +28,17 @@ export const login = async (data) => {
 export const register = async (data) => {
     return await apiClient.post('/user/', data);
 }
+
+export const getCurrentUser = async () => {
+    try {
+        return await apiClient.get('/user/me');
+    } catch (error) {
+        console.error('Error al obtener datos del usuario:', error);
+        return {
+            data: {
+                success: false,
+                message: 'Error al obtener datos del usuario'
+            }
+        };
+    }
+};

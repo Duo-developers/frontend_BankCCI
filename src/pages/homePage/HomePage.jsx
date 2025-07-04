@@ -207,7 +207,7 @@ export const HomePage = () => {
                 boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
               }}
             >
-              Abre tu cuenta ahora
+              Únete a nuestro imperio
             </Button>
           </Container>
         </HeroContent>
@@ -531,7 +531,7 @@ export const HomePage = () => {
               boxShadow: '0 4px 15px rgba(255,217,21,0.4)'
             }}
           >
-            Conviértete en Cliente CCI
+            Únete a nuestro imperio
           </Button>
         </Container>
       </Box>

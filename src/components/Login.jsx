@@ -143,16 +143,6 @@ export const Login = ({ switchAuthHandler }) => {
             {isLoading ? "Cargando..." : "Iniciar sesión"}
           </Button>
           
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
-            <Typography 
-              variant="body2" 
-              color="primary"
-              onClick={switchAuthHandler}
-              sx={{ cursor: 'pointer' }}
-            >
-              ¿No tienes cuenta aún? Regístrate aquí
-            </Typography>
-          </Box>
         </Box>
       </Paper>
     </Container>

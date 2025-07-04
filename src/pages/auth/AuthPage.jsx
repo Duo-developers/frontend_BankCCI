@@ -1,14 +1,8 @@
-import React, { useState } from 'react';
-import { Login, Register } from '../../components';
+import React from 'react';
+import { Login } from '../../components';
 import { Box, Container } from '@mui/material';
 
 export const AuthPage = () => {
-  const [isLogin, setIsLogin] = useState(true);
-
-  const handleAuthPageToggle = () => {
-    setIsLogin((prevState) => !prevState);
-  };
-
   return (
     <Box
       sx={{
@@ -29,11 +23,7 @@ export const AuthPage = () => {
             width: '100%'
           }}
         >
-          {isLogin ? (
-            <Login switchAuthHandler={handleAuthPageToggle} />
-          ) : (
-            <Register switchAuthHandler={handleAuthPageToggle} />
-          )}
+          <Login switchAuthHandler={null} />
         </Box>
       </Container>
     </Box>
