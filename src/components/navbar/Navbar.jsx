@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Button, Box, IconButton, Menu, MenuItem, Typography, Chip, Avatar } from '@mui/material'; // <-- 1. IMPORTACIONES AÑADIDAS
-import { Link } from 'react-router-dom';
+import React, { useState, useCallback } from 'react';
+import { AppBar, Toolbar, Button, Box, IconButton, Menu, MenuItem, Chip, Avatar, Tooltip } from '@mui/material';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../../shared/hooks/useUser';
 
 import MenuIcon from '@mui/icons-material/Menu';
@@ -10,11 +10,13 @@ import LoginIcon from '@mui/icons-material/Login';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import CompareArrowsOutlinedIcon from '@mui/icons-material/CompareArrowsOutlined';
+import SettingsIcon from '@mui/icons-material/Settings';
 
 export const Navbar = () => {
   const { userRole, isLoggedIn, username, logout } = useUser();
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
+  const navigate = useNavigate();
 
   const handleMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -24,10 +26,15 @@ export const Navbar = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = () => {
+  const handleLogout = useCallback(() => {
     logout();
     handleMenuClose();
-  };
+  }, [logout]);
+  
+  const handleGoToSettings = useCallback(() => {
+    navigate('/settings');
+    handleMenuClose();
+  }, [navigate]);
   
   const getInitials = (name = '') => {
     return name.charAt(0).toUpperCase();
@@ -45,11 +52,35 @@ export const Navbar = () => {
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           {isLoggedIn && (
             <>
-              <IconButton size="large" edge="start" color="inherit" aria-label="menu" sx={{ mr: 1 }} onClick={handleMenuOpen}>
-                <MenuIcon />
-              </IconButton>
-              <Menu anchorEl={anchorEl} open={isMenuOpen} onClose={handleMenuClose}>
-                <MenuItem onClick={handleLogout}>
+              <Tooltip title="Menú principal">
+                <IconButton 
+                  size="large" 
+                  edge="start" 
+                  color="inherit" 
+                  aria-label="menú principal" 
+                  sx={{ mr: 1 }} 
+                  onClick={handleMenuOpen}
+                >
+                  <MenuIcon />
+                </IconButton>
+              </Tooltip>
+              <Menu 
+                anchorEl={anchorEl} 
+                open={isMenuOpen} 
+                onClose={handleMenuClose}
+                aria-labelledby="menú principal"
+              >
+                <MenuItem 
+                  onClick={() => { handleGoToSettings(); }}
+                  aria-label="Ir a ajustes de cuenta"
+                >
+                  <SettingsIcon sx={{ mr: 1.5 }} />
+                  Ajustes
+                </MenuItem>
+                <MenuItem 
+                  onClick={() => { handleLogout(); }}
+                  aria-label="Cerrar sesión"
+                >
                   <LogoutIcon sx={{ mr: 1.5 }} />
                   Cerrar Sesión
                 </MenuItem>
@@ -108,23 +139,22 @@ export const Navbar = () => {
               Acceder
             </Button>
           ) : (
-            <Chip
-              avatar={<Avatar sx={{ bgcolor: '#FFD915', color: '#011B2F', fontWeight: 'bold' }}>{getInitials(username)}</Avatar>}
-              label={username}
-              variant="outlined"
-              sx={{
-                color: 'white',
-                borderColor: 'rgba(255, 255, 255, 0.23)',
-                marginLeft: '20px',
-                padding: '2px',
-                '& .MuiChip-label': {
-                  fontWeight: '500'
-                },
-                '&:hover': {
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)'
-                }
-              }}
-            />
+            <Tooltip title="Usuario conectado">
+              <Chip
+                avatar={<Avatar sx={{ bgcolor: '#FFD915', color: '#011B2F', fontWeight: 'bold' }}>{getInitials(username)}</Avatar>}
+                label={username}
+                variant="outlined"
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255, 255, 255, 0.23)',
+                  marginLeft: '20px',
+                  padding: '2px',
+                  '& .MuiChip-label': {
+                    fontWeight: '500'
+                  }
+                }}
+              />
+            </Tooltip>
           )}
         </Box>
       </Toolbar>

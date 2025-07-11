@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const apiClient = axios.create({
-    baseURL:  'http://localhost:3001/cci/v1/',
+    baseURL: 'http://localhost:3001/cci/v1/',
     timeout: 10000,
     httpsAgent: false
 });
@@ -19,7 +19,18 @@ apiClient.interceptors.request.use(
     (e) => {
         return Promise.reject(e)
     }
-)
+);
+
+apiClient.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response && error.response.status === 401) {
+            localStorage.removeItem('usuario');
+            window.location.href = '/auth';
+        }
+        return Promise.reject(error);
+    }
+);
 
 export const login = async (data) => {
     return await apiClient.post('/auth/login', data);
@@ -27,6 +38,49 @@ export const login = async (data) => {
 
 export const register = async (data) => {
     return await apiClient.post('/user/', data);
+}
+
+export const updateMe = async (data) => {
+    console.log("API: Enviando datos de actualización:", data);
+    
+    const cleanData = {};
+    
+    if (data.name && data.name.trim() !== '') cleanData.name = data.name.trim();
+    if (data.username && data.username.trim() !== '') cleanData.username = data.username.trim();
+    if (data.address && data.address.trim() !== '') cleanData.address = data.address.trim();
+    if (data.phone && data.phone.trim() !== '') cleanData.phone = data.phone.trim();
+    if (data.workName && data.workName.trim() !== '') cleanData.workName = data.workName.trim();
+    
+    if (data.monthlyIncome) {
+        const numValue = Number(data.monthlyIncome);
+        if (!isNaN(numValue) && numValue > 0) {
+            cleanData.monthlyIncome = numValue;
+        }
+    }
+    
+    console.log("API: Datos limpios a enviar:", cleanData);
+    
+    if (Object.keys(cleanData).length === 0) {
+        return { 
+            data: { 
+                success: true, 
+                message: 'No changes to update' 
+            } 
+        };
+    }
+    
+    try {
+        const response = await apiClient.put('/user/me', cleanData);
+        console.log("API: Respuesta recibida:", response.data);
+        return response;
+    } catch (error) {
+        console.error("API: Error al actualizar usuario:", error.response?.data || error.message);
+        throw error;
+    }
+}
+
+export const updatePassword = async (data) => {
+    return await apiClient.patch('/user/password', data);
 }
 
 export const getCurrentUser = async () => {
@@ -41,4 +95,4 @@ export const getCurrentUser = async () => {
             }
         };
     }
-};
+}

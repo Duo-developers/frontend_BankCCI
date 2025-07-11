@@ -1,47 +1,69 @@
 import { useState, useEffect } from 'react';
-import { getCurrentUser } from '../../services/api';
+import { jwtDecode } from 'jwt-decode'; 
 
 export const useUser = () => {
-    const [userRole, setUserRole] = useState(null);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [username, setUsername] = useState('');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [username, setUsername] = useState('');
+  const [userRole, setUserRole] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
-    const logout = () => {
-        localStorage.removeItem('usuario');
+  useEffect(() => {
+    const checkAuthStatus = () => {
+      setIsLoading(true);
+      try {
+        const userDetails = localStorage.getItem('usuario');
+        
+        if (userDetails) {
+          const user = JSON.parse(userDetails);
+          const token = user.token;
+          
+          try {
+            const decodedToken = jwtDecode(token);
+            const currentTime = Date.now() / 1000;
+            
+            if (decodedToken.exp && decodedToken.exp > currentTime) {
+              setIsLoggedIn(true);
+              setUsername(user.username || '');
+              setUserRole(user.role || '');
+            } else {
+              localStorage.removeItem('usuario');
+              setIsLoggedIn(false);
+            }
+          } catch (e) {
+            console.error("Error decoding token:", e);
+            setIsLoggedIn(!!token); 
+            setUsername(user.username || '');
+            setUserRole(user.role || '');
+          }
+        } else {
+          setIsLoggedIn(false);
+        }
+      } catch (error) {
+        console.error("Error checking auth status:", error);
         setIsLoggedIn(false);
-        setUserRole(null);
-        setUsername('');
-        window.location.href = '/'; 
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    useEffect(() => {
-        const checkUserSession = async () => {
-            const userInfo = localStorage.getItem('usuario');
-            if (!userInfo) {
-                setIsLoggedIn(false);
-                return;
-            }
+    checkAuthStatus();
+    
+    const handleStorageChange = () => {
+      checkAuthStatus();
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
-            try {
-                const response = await getCurrentUser();
-                
-                if (response.data && response.data.success && response.data.user?.role) {
-                    setIsLoggedIn(true);
-                    setUsername(response.data.user.username);
-                    setUserRole(response.data.user.role);
-                } else {
-                    console.warn('Token inválido o sesión expirada. Cerrando sesión.');
-                    logout();
-                }
-            } catch (error) {
-                console.error('No se pudo verificar la sesión con el servidor. Cerrando sesión.', error);
-                logout();
-            }
-        };
+  const logout = () => {
+    localStorage.removeItem('usuario');
+    setIsLoggedIn(false);
+    setUsername('');
+    setUserRole('');
+    window.location.href = '/auth';};
 
-        checkUserSession();
-    }, []);
-
-
-    return { userRole, isLoggedIn, username, logout };
+  return { isLoggedIn, username, userRole, isLoading, logout };
 };
