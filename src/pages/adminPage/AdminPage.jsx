@@ -388,6 +388,55 @@ export const AdminPage = () => {
         </Container>
       </Box>
 
+      {/* Apartado de Acciones para el admin */}
+      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
+        <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
+          <Typography 
+            variant="h3" 
+            align="center" 
+            gutterBottom 
+            fontWeight="bold"
+            sx={{ mb: 6, color: '#002A45' }}
+          >
+            Acciones
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Card sx={{ maxWidth: 350, p: 3, textAlign: 'center', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)' }}>
+              <CardContent>
+                <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
+                  Registrar
+                </Typography>
+                <Typography variant="body1" sx={{ color: '#555', mb: 3 }}>
+                  Registrar un nuevo usuario en el banco
+                </Typography>
+                <Button
+                  component={RouterLink}
+                  to="/register"
+                  variant="contained"
+                  size="large"
+                  sx={{
+                    bgcolor: '#FFD915',
+                    color: '#011B2F',
+                    py: 1.5,
+                    px: 4,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    '&:hover': {
+                      bgcolor: '#FFD358',
+                      transform: 'scale(1.05)'
+                    },
+                    transition: 'all 0.3s',
+                    boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
+                  }}
+                >
+                  Registrar usuario
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        </Container>
+      </Box>
+
       <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
         <Container maxWidth="lg">
           <Typography 
