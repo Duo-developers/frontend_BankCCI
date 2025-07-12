@@ -36,10 +36,6 @@ export const login = async (data) => {
     return await apiClient.post('/auth/login', data);
 }
 
-export const register = async (data) => {
-    return await apiClient.post('/user/', data);
-}
-
 export const updateMe = async (data) => {
     console.log("API: Enviando datos de actualización:", data);
     
@@ -95,4 +91,20 @@ export const getCurrentUser = async () => {
             }
         };
     }
+}
+
+export const getUsers = async () => {
+    return await apiClient.get('/user');
+}
+
+export const createUser = async (data) => {
+    return await apiClient.post('/user', data);
+}
+
+export const updateUser = async (uid, data) => {
+    return await apiClient.put(`/user/${uid}`, data);
+}
+
+export const deleteUser = async (uid) => {
+    return await apiClient.delete(`/user/${uid}`);
 }

@@ -17,7 +17,6 @@ export const useLogin = () => {
             const response = await loginRequest(loginData);
             if (response.data?.success && response.data.token) {
                 toast.success(response.data.message || '¡Bienvenido de vuelta!');
-                // Guardar token temporalmente
                 localStorage.setItem('usuario', JSON.stringify({
                     token: response.data.token
                 }));

@@ -2,28 +2,45 @@ import { useState, useEffect, useCallback } from 'react';
 import { getCurrentUser, updateMe, updatePassword as updatePasswordRequest } from '../../services/api';
 import toast from 'react-hot-toast';
 
+const initialProfileState = {
+    name: '', username: '', email: '', dpi: '',
+    address: '', phone: '', workName: '', monthlyIncome: ''
+};
+
+const initialPasswordState = {
+    currentPassword: '', newPassword: '', confirmNewPassword: ''
+};
+
 export const useSettings = () => {
-    const [user, setUser] = useState(null);
+    const [profileData, setProfileData] = useState(initialProfileState);
+    const [passwordData, setPasswordData] = useState(initialPasswordState);
+
     const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errors, setErrors] = useState({});
 
     const fetchUser = useCallback(async () => {
         setIsLoading(true);
-        setError(null);
         try {
             const response = await getCurrentUser();
             if (response.data?.success && response.data.user) {
-                setUser(response.data.user);
-                console.log("Datos de usuario cargados:", response.data.user);
+                const userData = response.data.user;
+                setProfileData({
+                    name: userData.name || '',
+                    username: userData.username || '',
+                    email: userData.email || '',
+                    dpi: userData.dpi || '',
+                    address: userData.address || '',
+                    phone: userData.phone || '',
+                    workName: userData.workName || '',
+                    monthlyIncome: userData.monthlyIncome || ''
+                });
             } else {
-                console.error("Error en respuesta:", response.data);
-                setError(response.data?.message || 'No se pudieron cargar los datos del usuario');
-                toast.error(response.data?.message || 'No se pudieron cargar los datos del usuario.');
+                toast.error(response.data?.message || 'No se pudieron cargar los datos.');
             }
-        } catch (error) {
-            console.error('Error detallado:', error);
-            setError(error.message || 'Error desconocido');
-            toast.error(`Error al conectar con el servidor: ${error.message || 'Error desconocido'}`);
+        } catch (err) {
+            console.error('Error al cargar datos:', err);
+            toast.error('Ocurrió un error al cargar tus datos.');
         } finally {
             setIsLoading(false);
         }
@@ -33,83 +50,67 @@ export const useSettings = () => {
         fetchUser();
     }, [fetchUser]);
 
-    const updateUser = async (data) => {
-        const toastId = 'update-user-' + Date.now();
+    const handleChange = (setState) => (e) => {
+        const { name, value } = e.target;
+        setState(prev => ({ ...prev, [name]: value }));
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: null }));
+        }
+    };
 
-        setIsLoading(true);
-        setError(null);
+    const handleProfileSubmit = async (e) => {
+        e.preventDefault();
+        setIsSubmitting(true);
+        try {
+            await updateMe(profileData);
+            toast.success('¡Perfil actualizado con éxito!');
+            await fetchUser(); // Recarga los datos para reflejar los cambios
+        } catch (err) {
+            console.error('Error al actualizar perfil:', err);
+            toast.error(err.response?.data?.message || 'Error al actualizar el perfil.');
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handlePasswordSubmit = async (e) => {
+        e.preventDefault();
+        const newErrors = {};
+        if (passwordData.newPassword.length < 6) {
+            newErrors.newPassword = 'La contraseña debe tener al menos 6 caracteres.';
+        }
+        if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+            newErrors.confirmNewPassword = 'Las contraseñas no coinciden.';
+        }
+        setErrors(newErrors);
         
+        if (Object.keys(newErrors).length > 0) return;
+
+        setIsSubmitting(true);
         try {
-            const response = await updateMe({
-                name: data.name || undefined,
-                username: data.username || undefined,
-                address: data.address || undefined,
-                phone: data.phone || undefined,
-                workName: data.workName || undefined,
-                monthlyIncome: data.monthlyIncome ? Number(data.monthlyIncome) : undefined
+            await updatePasswordRequest({
+                currentPassword: passwordData.currentPassword,
+                newPassword: passwordData.newPassword,
             });
-            
-            if (response.data?.success) {
-            toast.success(response.data.message || '¡Datos actualizados con éxito!', { id: toastId });
-                await fetchUser();
-            } else {
-                setError(response.data?.message || 'No se pudieron actualizar los datos');
-                toast.error(response.data?.message || 'No se pudieron actualizar los datos.');
-            }
-        } catch (error) {
-            console.error("Error completo en updateUser:", error);
-            console.error("Respuesta del servidor:", error.response?.data);
-            
-            let errorMessage = 'Error al actualizar los datos.';
-            
-            if (error.response?.data?.errors && error.response.data.errors.length > 0) {
-                errorMessage = error.response.data.errors.map(err => err.msg).join(', ');
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            }
-            
-            setError(errorMessage);
-            toast.error(errorMessage);
+            toast.success('¡Contraseña actualizada con éxito!');
+            setPasswordData(initialPasswordState); // Limpia el formulario tras el éxito
+        } catch (err) {
+            console.error('Error al cambiar contraseña:', err);
+            toast.error(err.response?.data?.message || 'Error al cambiar la contraseña.');
         } finally {
-            setIsLoading(false);
-        }
-    };
-    
-    const updatePassword = async (data) => {
-        setIsLoading(true);
-        setError(null);
-        try {
-            const response = await updatePasswordRequest(data);
-            if (response.data?.success) {
-                toast.success(response.data.message || '¡Contraseña actualizada con éxito!');
-            } else {
-                setError(response.data?.message || 'No se pudo actualizar la contraseña');
-                toast.error(response.data?.message || 'No se pudo actualizar la contraseña.');
-            }
-        } catch (error) {
-            console.error("Error en updatePassword:", error);
-            
-            let errorMessage = 'Error al cambiar la contraseña.';
-            
-            if (error.response?.data?.errors && error.response.data.errors.length > 0) {
-                errorMessage = error.response.data.errors.map(err => err.msg).join(', ');
-            } else if (error.response?.data?.message) {
-                errorMessage = error.response.data.message;
-            }
-            
-            setError(errorMessage);
-            toast.error(errorMessage);
-        } finally {
-            setIsLoading(false);
+            setIsSubmitting(false);
         }
     };
 
-    const refreshUserData = async () => {
-        console.log("Recargando datos de usuario...");
-        await fetchUser();
+    return {
+        profileData,
+        passwordData,
+        isLoading,
+        isSubmitting,
+        errors,
+        handleProfileChange: handleChange(setProfileData),
+        handlePasswordChange: handleChange(setPasswordData),
+        handleProfileSubmit,
+        handlePasswordSubmit,
     };
-
-    return { user, isLoading, error, updateUser, updatePassword, refreshUserData };
 };
-
-export default useSettings;  // Añadir esta línea para permitir ambos tipos de importación

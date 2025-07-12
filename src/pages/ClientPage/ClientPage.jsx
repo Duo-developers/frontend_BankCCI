@@ -1,540 +1,445 @@
-import React, { useRef } from 'react';
-import { Box, Container, Typography, Button, Card, CardContent, Avatar, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  Paper, 
+  Grid, 
+  Button, 
+  Divider, 
+  Avatar, 
+  IconButton, 
+  TextField, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  ListItemAvatar, 
+  ListItemSecondaryAction,
+  Tab, 
+  Tabs,
+  InputAdornment
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { Link } from 'react-router-dom';
+import { useUser } from '../../shared/hooks/useUser';
 
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import SecurityIcon from '@mui/icons-material/Security';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import SmartphoneIcon from '@mui/icons-material/Smartphone';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import CurrencyExchangeIcon from '@mui/icons-material/CurrencyExchange';
+import SendIcon from '@mui/icons-material/Send';
+import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
+import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
-const videoUrl = 'https://res.cloudinary.com/dwc4ynoj9/video/upload/v1751090690/Video_Para_CCI_Homepage_fmiwag.mp4';
-const lauraImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373822/samples/woman-on-a-football-field.jpg';
-const marcoImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373812/samples/people/kitchen-bar.jpg';
-const carlosImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373821/samples/man-portrait.jpg';
-
-const VideoBackground = styled(Box)({
+const BalanceCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 4),
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  background: 'linear-gradient(135deg, #002A45 0%, #003F66 100%)',
+  color: 'white',
   position: 'relative',
   overflow: 'hidden',
-  height: 'calc(100vh - 70px)', 
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  '&::before': {
+  borderRadius: 8,
+  boxShadow: '0 8px 16px rgba(0, 63, 102, 0.2)',
+  '&::after': {
     content: '""',
     position: 'absolute',
     top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 42, 69, 0.7)',
-    zIndex: 1,
-  },
-});
+    right: 0,
+    width: '150px',
+    height: '150px',
+    background: 'radial-gradient(circle, rgba(255,217,21,0.3) 0%, rgba(255,217,21,0) 70%)',
+    borderRadius: '50%',
+    transform: 'translate(50%, -50%)',
+    zIndex: 0,
+  }
+}));
 
-const VideoElement = styled('video')({
-  position: 'absolute',
-  width: '100%',
+const ActionCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 4),
   height: '100%',
-  objectFit: 'cover',
-  zIndex: 0,
-});
-
-const HeroContent = styled(Box)({
+  display: 'flex',
+  flexDirection: 'column',
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+  borderRadius: 8,
   position: 'relative',
-  zIndex: 2,
-  textAlign: 'center',
-  padding: '0 20px',
-});
-
-const ProductCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(3),
-  textAlign: 'center',
-  borderRadius: '10px',
-  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)',
-  margin: '0 15px',
-  height: '280px',
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  maxWidth: '300px',
+  overflow: 'hidden',
 }));
 
-const FeatureBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'flex-start',
-  padding: theme.spacing(3),
-  backgroundColor: 'white',
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[2],
-  height: '100%',
-  transition: 'transform 0.3s',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: theme.shadows[6],
-  },
-}));
-
-const TestimonialCard = styled(Card)(({ theme }) => ({
+const TransactionCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3, 4),
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shorter,
-  }),
+  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+  borderRadius: 8,
+}));
+
+const StyledTabs = styled(Tabs)(({ theme }) => ({
+  '& .MuiTab-root': {
+    minWidth: 'unset',
+    padding: theme.spacing(1, 2),
+    fontWeight: 'bold',
+    fontSize: '0.875rem',
+  },
+  '& .Mui-selected': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiTabs-indicator': {
+    backgroundColor: theme.palette.primary.main,
+    height: 3,
+  }
+}));
+
+const TransferButton = styled(IconButton)(({ theme }) => ({
+  backgroundColor: theme.palette.primary.main,
+  color: 'white',
   '&:hover': {
-    transform: 'scale(1.03)',
-    boxShadow: theme.shadows[4],
+    backgroundColor: theme.palette.primary.dark,
+  },
+  width: 40,
+  height: 40
+}));
+
+const MainActionButton = styled(Button)(({ theme }) => ({
+  backgroundColor: '#003F66',
+  color: 'white',
+  padding: theme.spacing(1.5, 0),
+  fontWeight: 'bold',
+  '&:hover': {
+    backgroundColor: '#002A45',
   },
 }));
 
-const SliderArrow = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  zIndex: 2,
-  top: '50%',
-  transform: 'translateY(-50%)',
-  backgroundColor: theme.palette.background.paper,
-  opacity: 0.9,
-  '&:hover': {
-    backgroundColor: theme.palette.background.paper,
-    opacity: 1,
+const favoriteContacts = [
+  { id: 1, name: 'Laura Campos', accountNumber: '**** 4532', avatar: 'L' },
+  { id: 2, name: 'Marco Antonio', accountNumber: '**** 7891', avatar: 'M' },
+  { id: 3, name: 'Carlos Pérez', accountNumber: '**** 3214', avatar: 'C' }
+];
+
+const recentTransactions = [
+  { 
+    id: 1, 
+    type: 'ingreso', 
+    amount: 1500.00, 
+    description: 'Depósito - Nómina', 
+    date: '10 Jul 2025', 
+    entity: 'Empresa XYZ' 
   },
-}));
+  { 
+    id: 2, 
+    type: 'egreso', 
+    amount: 89.99, 
+    description: 'Pago - Servicios', 
+    date: '08 Jul 2025', 
+    entity: 'Eléctrica Nacional' 
+  },
+  { 
+    id: 3, 
+    type: 'egreso', 
+    amount: 120.50, 
+    description: 'Transferencia', 
+    date: '05 Jul 2025', 
+    entity: 'Laura Campos' 
+  },
+  { 
+    id: 4, 
+    type: 'ingreso', 
+    amount: 500.00, 
+    description: 'Transferencia recibida', 
+    date: '01 Jul 2025', 
+    entity: 'Carlos Pérez' 
+  }
+];
 
 export const ClientPage = () => {
-  const sliderRef = useRef();
+  const { username } = useUser(); // Obtenemos el nombre del usuario actual
+  const [currency, setCurrency] = useState('USD');
+  const [transferAmounts, setTransferAmounts] = useState({});
+  const [selectedTab, setSelectedTab] = useState(0);
   
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+  // Función para convertir moneda (simulada)
+  const convertCurrency = () => {
+    setCurrency(currency === 'USD' ? 'EUR' : 'USD');
   };
   
-  const testimonialSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
+  // Función para manejar el cambio de pestaña
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
   };
-
+  
+  // Función para manejar el cambio en el campo de monto para cada contacto
+  const handleAmountChange = (contactId, value) => {
+    setTransferAmounts({
+      ...transferAmounts,
+      [contactId]: value
+    });
+  };
+  
+  // Función para manejar el envío de transferencia (simulada)
+  const handleTransfer = (contactId) => {
+    const amount = transferAmounts[contactId];
+    if (!amount) return;
+    
+    // Aquí iría la lógica para procesar la transferencia
+    alert(`Transferencia de $${amount} realizada con éxito`);
+    
+    // Limpiamos el monto del contacto específico después de la transferencia
+    setTransferAmounts({
+      ...transferAmounts,
+      [contactId]: ''
+    });
+  };
+  
   return (
-    <Box>
-      <VideoBackground>
-        <VideoElement autoPlay muted loop>
-          <source src={videoUrl} type="video/mp4" />
-          Tu navegador no soporta videos HTML5.
-        </VideoElement>
-        <HeroContent>
-          <Container maxWidth="md">
-            <Typography 
-              component="h1" 
-              variant="h2" 
-              fontWeight="bold" 
-              gutterBottom 
-              sx={{ color: 'white', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}
-            >
-              La banca digital que se adapta a ti
-            </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                mb: 5, 
-                color: '#FFD358',
-                textShadow: '1px 1px 3px rgba(0,0,0,0.5)',
-                maxWidth: '800px',
-                mx: 'auto'
-              }}
-            >
-              Abre una cuenta en minutos y maneja tus finanzas sin complicaciones,
-              con la tecnología más avanzada y segura del mercado.
-            </Typography>
-            <Button 
-              component={RouterLink}
-              to="/auth"
-              variant="contained" 
-              size="large"
-              sx={{
-                bgcolor: '#FFD915',
-                color: '#011B2F',
-                py: 1.5,
-                px: 4,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                '&:hover': { 
-                  bgcolor: '#FFD358',
-                  transform: 'scale(1.05)'
-                },
-                transition: 'all 0.3s',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
-              }}
-            >
-              Únete a nuestro imperio
-            </Button>
-          </Container>
-        </HeroContent>
-      </VideoBackground>
-
-      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
-        <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 6, color: '#002A45' }}
-          >
-            Nuestros Productos
-          </Typography>
+    <Box sx={{ py: 4, bgcolor: '#f9fbfd', minHeight: 'calc(100vh - 64px)' }}>
+      {/* Cambiado de maxWidth="lg" a maxWidth="xl" para que ocupe más ancho */}
+      <Container maxWidth="xl" sx={{ px: { xs: 2, sm: 4 } }}>
+        {/* Saludo principal - Ahora usando el nombre del usuario dinámicamente */}
+        <Typography 
+          variant="h4" 
+          fontWeight="bold" 
+          gutterBottom 
+          sx={{ color: '#0277bd', mb: 1 }}
+        >
+          ¡Hola, {username || 'Usuario'}!
+        </Typography>
+        <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 4 }}>
+          Bienvenido a tu panel de control. Aquí puedes gestionar tus finanzas.
+        </Typography>
+        
+        {/* Ajustado el espaciado entre componentes */}
+        <Grid container spacing={4}>
+          {/* Componente 1: Saldo Principal */}
+          <Grid item xs={12} lg={5} xl={4}>
+            <BalanceCard>
+              <Box sx={{ position: 'relative', zIndex: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                  <AccountBalanceWalletIcon sx={{ fontSize: 28, mr: 1 }} />
+                  <Typography variant="h6">Mi Saldo Principal</Typography>
+                </Box>
+                
+                <Box sx={{ display: 'flex', alignItems: 'baseline', mb: 1 }}>
+                  <Typography variant="h3" fontWeight="bold" sx={{ fontSize: '2.5rem' }}>
+                    ${currency === 'USD' ? '4,850.75' : '4,460.69'}
+                  </Typography>
+                  <Typography variant="subtitle1" sx={{ ml: 1 }}>
+                    {currency}
+                  </Typography>
+                </Box>
+                
+                <Typography variant="body2" sx={{ opacity: 0.8, mb: 4 }}>
+                  Cuenta Corriente: **** 5678
+                </Typography>
+                
+                <Box sx={{ display: 'flex', gap: 1.5 }}>
+                  <Button 
+                    variant="contained" 
+                    size="medium"
+                    startIcon={<SendIcon />}
+                    sx={{ 
+                      bgcolor: '#FFD915', 
+                      color: '#011B2F',
+                      '&:hover': { bgcolor: '#FFD358' },
+                      fontWeight: 'bold',
+                      px: 3
+                    }}
+                  >
+                    TRANSFERIR
+                  </Button>
+                  <Button 
+                    variant="outlined" 
+                    size="medium"
+                    startIcon={<CurrencyExchangeIcon />}
+                    onClick={convertCurrency}
+                    sx={{ 
+                      borderColor: 'rgba(255,255,255,0.5)', 
+                      color: 'white',
+                      '&:hover': { 
+                        borderColor: 'white', 
+                        bgcolor: 'rgba(255,255,255,0.1)' 
+                      },
+                      px: 2
+                    }}
+                  >
+                    CAMBIAR A {currency === 'USD' ? 'EUR' : 'USD'}
+                  </Button>
+                </Box>
+              </Box>
+            </BalanceCard>
+          </Grid>
           
-          <Box sx={{ position: 'relative', px: { xs: 0, md: 6 } }}>
-            <SliderArrow
-              onClick={() => sliderRef.current.slickPrev()}
-              sx={{ left: { xs: '-5px', md: '-25px' } }}
-            >
-              <ArrowBackIosNewIcon fontSize="small" />
-            </SliderArrow>
-            
-            <Slider ref={sliderRef} {...sliderSettings}>
-              {/* Product 1 */}
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <AccountBalanceWalletIcon sx={{ fontSize: 35, color: 'white' }} />
+          {/* Componente 2: Transferencias Rápidas - Aumentado el ancho */}
+          <Grid item xs={12} lg={7} xl={8}>
+            <ActionCard>
+              <Typography variant="h6" fontWeight="bold" color="primary.dark" sx={{ mb: 0.5 }}>
+                Transferencias Rápidas
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Envía dinero a tus contactos favoritos
+              </Typography>
+              
+              <StyledTabs 
+                value={selectedTab} 
+                onChange={handleTabChange}
+                indicatorColor="primary"
+                textColor="primary"
+              >
+                <Tab label="FAVORITOS" sx={{ fontWeight: 'bold' }} />
+                <Tab label="RECIENTES" sx={{ fontWeight: 'bold' }} />
+              </StyledTabs>
+              
+              <Box sx={{ mt: 3, mb: 2 }}>
+                {selectedTab === 0 && (
+                  <>
+                    {favoriteContacts.map((contact, index) => (
+                      <Box 
+                        key={contact.id}
+                        sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          py: 2,
+                          borderBottom: index < favoriteContacts.length - 1 ? '1px solid #eee' : 'none'
+                        }}
+                      >
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: '#003F66',
+                            color: 'white',
+                            width: 48,
+                            height: 48,
+                            fontSize: '1.2rem',
+                            fontWeight: 'bold'
+                          }}
+                        >
+                          {contact.avatar}
+                        </Avatar>
+                        <Box sx={{ ml: 2, flexGrow: 1 }}>
+                          <Typography variant="subtitle1" fontWeight="bold">
+                            {contact.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {contact.accountNumber}
+                          </Typography>
+                        </Box>
+                        
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <TextField
+                            size="small"
+                            placeholder="Monto"
+                            variant="outlined"
+                            value={transferAmounts[contact.id] || ''}
+                            onChange={(e) => handleAmountChange(contact.id, e.target.value)}
+                            InputProps={{
+                              startAdornment: (
+                                <InputAdornment position="start">
+                                  <Typography sx={{ color: 'text.secondary' }}>$</Typography>
+                                </InputAdornment>
+                              ),
+                            }}
+                            sx={{ width: '140px' }}
+                          />
+                          <TransferButton
+                            onClick={() => handleTransfer(contact.id)}
+                            aria-label="transferir"
+                          >
+                            <ArrowForwardIcon />
+                          </TransferButton>
+                        </Box>
+                      </Box>
+                    ))}
+                  </>
+                )}
+                
+                {selectedTab === 1 && (
+                  <Box sx={{ p: 2, textAlign: 'center' }}>
+                    <Typography variant="body1" color="text.secondary">
+                      Tus contactos recientes aparecerán aquí.
+                    </Typography>
                   </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Cuentas de Ahorro</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Intereses competitivos, cero comisiones ocultas y acceso inmediato a tu dinero.
-                  </Typography>
-                </ProductCard>
+                )}
               </Box>
               
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <CreditCardIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Tarjetas de Crédito</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Beneficios exclusivos, aceptación mundial y programas de recompensas.
-                  </Typography>
-                </ProductCard>
+              <Box sx={{ mt: 'auto', pt: 2 }}>
+                <MainActionButton 
+                  fullWidth
+                  variant="contained"
+                  startIcon={<SendIcon />}
+                >
+                  NUEVA TRANSFERENCIA
+                </MainActionButton>
               </Box>
-              
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <TrendingUpIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Inversiones</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Haz crecer tu patrimonio con planes de inversión personalizados.
-                  </Typography>
-                </ProductCard>
-              </Box>
-              
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <SecurityIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Seguros</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Protección completa para ti y tu familia con coberturas flexibles.
-                  </Typography>
-                </ProductCard>
-              </Box>
-            </Slider>
-            
-            <SliderArrow
-              onClick={() => sliderRef.current.slickNext()}
-              sx={{ right: { xs: '-5px', md: '-25px' } }}
-            >
-              <ArrowForwardIosIcon fontSize="small" />
-            </SliderArrow>
-          </Box>
-        </Container>
-      </Box>
-      
-      <Box sx={{ py: 6 }}>
-        <Container maxWidth="lg">
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 4, color: '#002A45' }}
-          >
-            ¿Por qué elegir Bank CCI?
-          </Typography>
-          <Box sx={{ mt: 4, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-            <Box sx={{ width: { xs: '100%', md: '31%' }, mb: { xs: 3, md: 0 } }}>
-              <FeatureBox>
-                <SecurityIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    Seguridad de Vanguardia
-                  </Typography>
-                  <Typography variant="body1">
-                    Protegemos tus datos y tu dinero con la tecnología de encriptación más avanzada del mercado.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-            
-            <Box sx={{ width: { xs: '100%', md: '31%' }, mb: { xs: 3, md: 0 } }}>
-              <FeatureBox>
-                <SupportAgentIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    Atención 24/7
-                  </Typography>
-                  <Typography variant="body1">
-                    Nuestro equipo de especialistas está disponible todos los días del año para asistirte.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-            
-            <Box sx={{ width: { xs: '100%', md: '31%' } }}>
-              <FeatureBox>
-                <SmartphoneIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    App Móvil Intuitiva
-                  </Typography>
-                  <Typography variant="body1">
-                    Gestiona tus finanzas desde cualquier lugar con nuestra aplicación premiada.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-
-      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
-        <Container maxWidth="lg">
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 6, color: '#002A45' }}
-          >
-            Lo que dicen nuestros clientes
-          </Typography>
+            </ActionCard>
+          </Grid>
           
-          <Box sx={{ position: 'relative', px: { xs: 0, md: 5 } }}>
-            <Slider {...testimonialSettings}>
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${lauraImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center top'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={lauraImageUrl}
-                      >
-                        LC
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Laura Campos</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2023</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "Abrir mi cuenta fue increíblemente rápido y la app es muy fácil de usar. ¡El mejor banco digital!"
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
+          {/* Componente 3: Movimientos Recientes */}
+          <Grid item xs={12}>
+            <TransactionCard>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Typography variant="h6" fontWeight="bold" color="primary.dark">
+                  Movimientos Recientes
+                </Typography>
+                <Button 
+                  size="small" 
+                  color="primary"
+                  component={Link}
+                  to="/accounts"
+                >
+                  VER TODOS
+                </Button>
               </Box>
               
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${marcoImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={marcoImageUrl}
-                      >
-                        MA
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Marco Antonio</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2022</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "La atención al cliente es excepcional. Resolvieron mi problema en minutos. Muy recomendado."
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
-              </Box>
+              <Divider sx={{ mb: 2 }} />
               
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${carlosImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={carlosImageUrl}
-                      >
-                        CP
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Carlos Pérez</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2021</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "Las inversiones con Bank CCI han sido las mejores decisiones financieras que he tomado. Excelente asesoramiento."
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
-              </Box>
-            </Slider>
-          </Box>
-        </Container>
-      </Box>
-
-      <Box 
-        sx={{ 
-          bgcolor: '#011B2F', 
-          color: 'white', 
-          py: 8, 
-          textAlign: 'center',
-          backgroundImage: 'linear-gradient(to right, #011B2F, #003F66)'
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
-            ¿Listo para empezar?
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 5, maxWidth: '700px', mx: 'auto' }}>
-            Únete a la nueva era de la banca y descubre por qué miles de personas confían en Bank CCI cada día.
-          </Typography>
-          <Button 
-            component={RouterLink}
-            to="/auth"
-            variant="contained" 
-            size="large"
-            sx={{
-              bgcolor: '#FFD915',
-              color: '#011B2F',
-              py: 2,
-              px: 5,
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              '&:hover': { 
-                bgcolor: '#FFD358',
-                transform: 'scale(1.05)'
-              },
-              transition: 'all 0.3s',
-              boxShadow: '0 4px 15px rgba(255,217,21,0.4)'
-            }}
-          >
-            Únete a nuestro imperio
-          </Button>
-        </Container>
-      </Box>
+              <List sx={{ width: '100%', p: 0 }}>
+                {recentTransactions.map((transaction) => (
+                  <React.Fragment key={transaction.id}>
+                    <ListItem 
+                      alignItems="flex-start"
+                      sx={{ py: 1.5 }}
+                    >
+                      <ListItemAvatar>
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: transaction.type === 'ingreso' ? '#4caf50' : '#ff9800',
+                            color: 'white'
+                          }}
+                        >
+                          {transaction.type === 'ingreso' ? <ArrowDownwardIcon /> : <ArrowUpwardIcon />}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText 
+                        primary={
+                          <Typography variant="subtitle2" component="span">
+                            {transaction.description}
+                          </Typography>
+                        } 
+                        secondary={
+                          <>
+                            <Typography component="span" variant="body2" color="text.secondary">
+                              {transaction.entity} • {transaction.date}
+                            </Typography>
+                          </>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <Typography 
+                          variant="subtitle2" 
+                          color={transaction.type === 'ingreso' ? 'success.main' : 'warning.dark'}
+                          fontWeight="bold"
+                        >
+                          {transaction.type === 'ingreso' ? '+' : '-'}${transaction.amount.toFixed(2)}
+                        </Typography>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    {transaction.id < recentTransactions.length && <Divider component="li" />}
+                  </React.Fragment>
+                ))}
+              </List>
+            </TransactionCard>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 };

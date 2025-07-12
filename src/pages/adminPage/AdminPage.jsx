@@ -1,590 +1,410 @@
-
-import React, { useRef } from 'react';
-import { Box, Container, Typography, Button, Card, CardContent, Avatar, IconButton } from '@mui/material';
+import React, { useState } from 'react';
+import { 
+  Box, 
+  Container, 
+  Typography, 
+  Paper, 
+  Grid, 
+  Button, 
+  Card, 
+  CardContent, 
+  IconButton, 
+  Divider, 
+  List, 
+  ListItem, 
+  ListItemText, 
+  ListItemAvatar, 
+  Avatar,
+  ListItemSecondaryAction,
+  Chip,
+  Tooltip,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel
+} from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { Link as RouterLink } from 'react-router-dom';
-import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { Link } from 'react-router-dom';
 
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
+
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
-import CreditCardIcon from '@mui/icons-material/CreditCard';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import SecurityIcon from '@mui/icons-material/Security';
-import SupportAgentIcon from '@mui/icons-material/SupportAgent';
-import SmartphoneIcon from '@mui/icons-material/Smartphone';
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import InventoryIcon from '@mui/icons-material/Inventory';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import AddCardIcon from '@mui/icons-material/AddCard';
+import EditIcon from '@mui/icons-material/Edit';
+import WarningIcon from '@mui/icons-material/Warning';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import SortIcon from '@mui/icons-material/Sort';
+import InfoIcon from '@mui/icons-material/Info';
 
-const videoUrl = 'https://res.cloudinary.com/dwc4ynoj9/video/upload/v1751090690/Video_Para_CCI_Homepage_fmiwag.mp4';
-const lauraImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373822/samples/woman-on-a-football-field.jpg';
-const marcoImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373812/samples/people/kitchen-bar.jpg';
-const carlosImageUrl = 'https://res.cloudinary.com/dwc4ynoj9/image/upload/v1725373821/samples/man-portrait.jpg';
-
-const VideoBackground = styled(Box)({
-  position: 'relative',
-  overflow: 'hidden',
-  height: 'calc(100vh - 70px)', 
-  width: '100%',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  '&::before': {
-    content: '""',
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    width: '100%',
-    height: '100%',
-    backgroundColor: 'rgba(0, 42, 69, 0.7)',
-    zIndex: 1,
-  },
-});
-
-const VideoElement = styled('video')({
-  position: 'absolute',
-  width: '100%',
+const KpiCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
   height: '100%',
-  objectFit: 'cover',
-  zIndex: 0,
-});
-
-const HeroContent = styled(Box)({
-  position: 'relative',
-  zIndex: 2,
-  textAlign: 'center',
-  padding: '0 20px',
-});
-
-const ProductCard = styled(Card)(({ theme }) => ({
-  padding: theme.spacing(3),
-  textAlign: 'center',
-  borderRadius: '10px',
-  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)',
-  margin: '0 15px',
-  height: '280px',
   display: 'flex',
   flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  maxWidth: '300px',
-}));
-
-const FeatureBox = styled(Box)(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'flex-start',
-  padding: theme.spacing(3),
-  backgroundColor: 'white',
-  borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[2],
-  height: '100%',
-  transition: 'transform 0.3s',
+  borderRadius: 12,
+  transition: 'all 0.3s ease',
   '&:hover': {
     transform: 'translateY(-5px)',
-    boxShadow: theme.shadows[6],
-  },
-}));
-
-const TestimonialCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shorter,
-  }),
-  '&:hover': {
-    transform: 'scale(1.03)',
     boxShadow: theme.shadows[4],
   },
 }));
 
-const SliderArrow = styled(IconButton)(({ theme }) => ({
-  position: 'absolute',
-  zIndex: 2,
-  top: '50%',
-  transform: 'translateY(-50%)',
-  backgroundColor: theme.palette.background.paper,
-  opacity: 0.9,
+const ActionCard = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  height: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  borderRadius: 12,
+  transition: 'all 0.3s ease',
   '&:hover': {
-    backgroundColor: theme.palette.background.paper,
-    opacity: 1,
+    transform: 'translateY(-5px)',
+    boxShadow: theme.shadows[4],
   },
 }));
 
+const kpiData = [
+  { 
+    id: 1, 
+    title: 'Usuarios Activos', 
+    value: '1,249', 
+    change: '+5.8%', 
+    trend: 'up', 
+    icon: <PeopleAltIcon />,
+    color: '#4caf50' 
+  },
+  { 
+    id: 2, 
+    title: 'Cuentas Totales', 
+    value: '2,871', 
+    change: '+3.2%', 
+    trend: 'up', 
+    icon: <AccountBalanceWalletIcon />,
+    color: '#2196f3' 
+  },
+  { 
+    id: 3, 
+    title: 'Volumen Transaccional', 
+    value: '$32,568', 
+    change: '+12.4%', 
+    trend: 'up', 
+    icon: <MonetizationOnIcon />,
+    color: '#673ab7' 
+  },
+  { 
+    id: 4, 
+    title: 'Productos en Catálogo', 
+    value: '145', 
+    change: '+2.5%', 
+    trend: 'up', 
+    icon: <InventoryIcon />,
+    color: '#ff9800' 
+  },
+];
+
+const topAccountsData = [
+  { name: 'Cuenta #5472', movements: 128 },
+  { name: 'Cuenta #3821', movements: 96 },
+  { name: 'Cuenta #9274', movements: 84 },
+  { name: 'Cuenta #1084', movements: 72 },
+  { name: 'Cuenta #4529', movements: 65 },
+];
+
+const recentActivities = [
+  { 
+    id: 1, 
+    action: 'Nuevo usuario creado', 
+    details: 'Usuario: Carlos Mendoza', 
+    timestamp: 'Hace 10 minutos', 
+    status: 'success' 
+  },
+  { 
+    id: 2, 
+    action: 'Depósito realizado', 
+    details: '$5,000 a cuenta #7821', 
+    timestamp: 'Hace 25 minutos', 
+    status: 'success' 
+  },
+  { 
+    id: 3, 
+    action: 'Intento de acceso fallido', 
+    details: 'IP: 192.168.1.45', 
+    timestamp: 'Hace 40 minutos', 
+    status: 'warning' 
+  },
+  { 
+    id: 4, 
+    action: 'Cuenta actualizada', 
+    details: 'Cuenta #3921 - Nuevo límite', 
+    timestamp: 'Hace 1 hora', 
+    status: 'success' 
+  },
+  { 
+    id: 5, 
+    action: 'Producto añadido', 
+    details: 'Seguro de viaje premium', 
+    timestamp: 'Hace 2 horas', 
+    status: 'success' 
+  },
+];
+
 export const AdminPage = () => {
-  const sliderRef = useRef();
+  const [sortOrder, setSortOrder] = useState('desc');
   
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 3,
-    slidesToScroll: 1,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-          slidesToScroll: 1,
-        }
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
+  const sortedAccountsData = [...topAccountsData].sort((a, b) => {
+    return sortOrder === 'desc' 
+      ? b.movements - a.movements 
+      : a.movements - b.movements;
+  });
   
-  const testimonialSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 2,
-    slidesToScroll: 1,
-    arrows: false,
-    responsive: [
-      {
-        breakpoint: 900,
-        settings: {
-          slidesToShow: 1,
-          slidesToScroll: 1
-        }
-      }
-    ]
-  };
-
   return (
-    <Box>
-      <VideoBackground>
-        <VideoElement autoPlay muted loop>
-          <source src={videoUrl} type="video/mp4" />
-          Tu navegador no soporta videos HTML5.
-        </VideoElement>
-        <HeroContent>
-          <Container maxWidth="md">
-            <Typography 
-              component="h1" 
-              variant="h2" 
-              fontWeight="bold" 
-              gutterBottom 
-              sx={{ color: 'white', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}
-            >
-              La banca digital que se adapta a ti
-            </Typography>
-            <Typography 
-              variant="h5" 
-              sx={{ 
-                mb: 5, 
-                color: '#FFD358',
-                textShadow: '1px 1px 3px rgba(0,0,0,0.5)',
-                maxWidth: '800px',
-                mx: 'auto'
-              }}
-            >
-              Abre una cuenta en minutos y maneja tus finanzas sin complicaciones,
-              con la tecnología más avanzada y segura del mercado.
-            </Typography>
-            <Button 
-              component={RouterLink}
-              to="/auth"
-              variant="contained" 
-              size="large"
-              sx={{
-                bgcolor: '#FFD915',
-                color: '#011B2F',
-                py: 1.5,
-                px: 4,
-                fontSize: '1.1rem',
-                fontWeight: 'bold',
-                '&:hover': { 
-                  bgcolor: '#FFD358',
-                  transform: 'scale(1.05)'
-                },
-                transition: 'all 0.3s',
-                boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
-              }}
-            >
-              Únete a nuestro imperio
-            </Button>
-          </Container>
-        </HeroContent>
-      </VideoBackground>
-
-      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
-        <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 6, color: '#002A45' }}
-          >
-            Nuestros Productos
+    <Box sx={{ py: 4, bgcolor: '#f9fbfd', minHeight: 'calc(100vh - 64px)' }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight="bold" gutterBottom color="primary.dark">
+            Panel de Administración
           </Typography>
+          <Typography variant="subtitle1" color="text.secondary">
+            Vista general del sistema bancario. Fecha actual: 12 de Julio, 2025
+          </Typography>
+        </Box>
+        
+        {/* Componente 1: KPIs del Sistema */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          {kpiData.map((kpi) => (
+            <Grid item xs={12} sm={6} md={3} key={kpi.id}>
+              <KpiCard elevation={1}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                  <Avatar sx={{ bgcolor: kpi.color + '20', color: kpi.color }}>
+                    {kpi.icon}
+                  </Avatar>
+                  <Chip 
+                    label={kpi.change} 
+                    size="small" 
+                    color={kpi.trend === 'up' ? 'success' : 'error'}
+                    sx={{ fontWeight: 'bold' }}
+                  />
+                </Box>
+                <Typography variant="h4" fontWeight="bold" sx={{ mb: 0.5 }}>
+                  {kpi.value}
+                </Typography>
+                <Typography variant="body2" color="text.secondary">
+                  {kpi.title}
+                </Typography>
+              </KpiCard>
+            </Grid>
+          ))}
+        </Grid>
+        
+        {/* Componente 2: Atajos Administrativos */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} md={4}>
+            <ActionCard elevation={1}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#4caf50', mr: 2 }}>
+                  <PersonAddIcon />
+                </Avatar>
+                <Typography variant="h6" fontWeight="bold">
+                  Agregar Nuevo Cliente
+                </Typography>
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Registra un nuevo usuario en el sistema con rol de cliente.
+              </Typography>
+              <Button 
+                variant="contained" 
+                fullWidth
+                color="success"
+                component={Link}
+                to="/admin/users/new"
+                sx={{ mt: 'auto' }}
+              >
+                Crear Cliente
+              </Button>
+            </ActionCard>
+          </Grid>
           
-          <Box sx={{ position: 'relative', px: { xs: 0, md: 6 } }}>
-            <SliderArrow
-              onClick={() => sliderRef.current.slickPrev()}
-              sx={{ left: { xs: '-5px', md: '-25px' } }}
-            >
-              <ArrowBackIosNewIcon fontSize="small" />
-            </SliderArrow>
-            
-            <Slider ref={sliderRef} {...sliderSettings}>
-              {/* Product 1 */}
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <AccountBalanceWalletIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Cuentas de Ahorro</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Intereses competitivos, cero comisiones ocultas y acceso inmediato a tu dinero.
-                  </Typography>
-                </ProductCard>
-              </Box>
-              
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <CreditCardIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Tarjetas de Crédito</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Beneficios exclusivos, aceptación mundial y programas de recompensas.
-                  </Typography>
-                </ProductCard>
-              </Box>
-              
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <TrendingUpIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Inversiones</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Haz crecer tu patrimonio con planes de inversión personalizados.
-                  </Typography>
-                </ProductCard>
-              </Box>
-              
-              <Box>
-                <ProductCard>
-                  <Box sx={{ 
-                    bgcolor: '#003F66', 
-                    width: 70, 
-                    height: 70, 
-                    borderRadius: '50%', 
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    mb: 2
-                  }}>
-                    <SecurityIcon sx={{ fontSize: 35, color: 'white' }} />
-                  </Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>Seguros</Typography>
-                  <Typography variant="body1" sx={{ color: '#555' }}>
-                    Protección completa para ti y tu familia con coberturas flexibles.
-                  </Typography>
-                </ProductCard>
-              </Box>
-            </Slider>
-            
-            <SliderArrow
-              onClick={() => sliderRef.current.slickNext()}
-              sx={{ right: { xs: '-5px', md: '-25px' } }}
-            >
-              <ArrowForwardIosIcon fontSize="small" />
-            </SliderArrow>
-          </Box>
-        </Container>
-      </Box>
-      
-      <Box sx={{ py: 6 }}>
-        <Container maxWidth="lg">
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 4, color: '#002A45' }}
-          >
-            ¿Por qué elegir Bank CCI?
-          </Typography>
-          <Box sx={{ mt: 4, display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-            <Box sx={{ width: { xs: '100%', md: '31%' }, mb: { xs: 3, md: 0 } }}>
-              <FeatureBox>
-                <SecurityIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    Seguridad de Vanguardia
-                  </Typography>
-                  <Typography variant="body1">
-                    Protegemos tus datos y tu dinero con la tecnología de encriptación más avanzada del mercado.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-            
-            <Box sx={{ width: { xs: '100%', md: '31%' }, mb: { xs: 3, md: 0 } }}>
-              <FeatureBox>
-                <SupportAgentIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    Atención 24/7
-                  </Typography>
-                  <Typography variant="body1">
-                    Nuestro equipo de especialistas está disponible todos los días del año para asistirte.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-            
-            <Box sx={{ width: { xs: '100%', md: '31%' } }}>
-              <FeatureBox>
-                <SmartphoneIcon sx={{ fontSize: 45, color: '#003F66', mr: 2, mt: 0.5 }} />
-                <Box>
-                  <Typography variant="h5" fontWeight="bold" sx={{ mb: 1, color: '#002A45' }}>
-                    App Móvil Intuitiva
-                  </Typography>
-                  <Typography variant="body1">
-                    Gestiona tus finanzas desde cualquier lugar con nuestra aplicación premiada.
-                  </Typography>
-                </Box>
-              </FeatureBox>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* Apartado de Acciones para el admin */}
-      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
-        <Container maxWidth="lg" sx={{ textAlign: 'center' }}>
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 6, color: '#002A45' }}
-          >
-            Acciones
-          </Typography>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <Card sx={{ maxWidth: 350, p: 3, textAlign: 'center', borderRadius: '10px', boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.08)' }}>
-              <CardContent>
-                <Typography variant="h5" fontWeight="bold" sx={{ mb: 2 }}>
-                  Registrar
+          <Grid item xs={12} md={4}>
+            <ActionCard elevation={1}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#2196f3', mr: 2 }}>
+                  <AddCardIcon />
+                </Avatar>
+                <Typography variant="h6" fontWeight="bold">
+                  Realizar Depósito
                 </Typography>
-                <Typography variant="body1" sx={{ color: '#555', mb: 3 }}>
-                  Registrar un nuevo usuario en el banco
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Deposita fondos en la cuenta de un cliente existente.
+              </Typography>
+              <Button 
+                variant="contained" 
+                fullWidth
+                color="primary"
+                component={Link}
+                to="/admin/deposits/new"
+                sx={{ mt: 'auto' }}
+              >
+                Nuevo Depósito
+              </Button>
+            </ActionCard>
+          </Grid>
+          
+          <Grid item xs={12} md={4}>
+            <ActionCard elevation={1}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                <Avatar sx={{ bgcolor: '#ff9800', mr: 2 }}>
+                  <EditIcon />
+                </Avatar>
+                <Typography variant="h6" fontWeight="bold">
+                  Modificar Depósito
                 </Typography>
-                <Button
-                  component={RouterLink}
-                  to="/register"
-                  variant="contained"
-                  size="large"
-                  sx={{
-                    bgcolor: '#FFD915',
-                    color: '#011B2F',
-                    py: 1.5,
-                    px: 4,
-                    fontSize: '1.1rem',
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      bgcolor: '#FFD358',
-                      transform: 'scale(1.05)'
-                    },
-                    transition: 'all 0.3s',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.25)'
+              </Box>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                Edita o corrige los detalles de un depósito existente.
+              </Typography>
+              <Button 
+                variant="contained" 
+                fullWidth
+                color="warning"
+                component={Link}
+                to="/admin/deposits"
+                sx={{ mt: 'auto' }}
+              >
+                Ver Depósitos
+              </Button>
+            </ActionCard>
+          </Grid>
+        </Grid>
+        
+        {/* Componente 3: Vista Previa de Reporte Clave */}
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12}>
+            <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant="h6" fontWeight="bold">
+                  Top 5 - Cuentas con más movimientos
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  <FormControl variant="outlined" size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel id="sort-order-label">Ordenar</InputLabel>
+                    <Select
+                      labelId="sort-order-label"
+                      value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                      label="Ordenar"
+                      startAdornment={<SortIcon fontSize="small" sx={{ mr: 1 }} />}
+                    >
+                      <MenuItem value="desc">Mayor a menor</MenuItem>
+                      <MenuItem value="asc">Menor a mayor</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
+              </Box>
+              
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart
+                  data={sortedAccountsData}
+                  margin={{
+                    top: 5,
+                    right: 30,
+                    left: 20,
+                    bottom: 5,
                   }}
                 >
-                  Registrar usuario
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <RechartsTooltip formatter={(value) => [`${value} movimientos`, 'Movimientos']} />
+                  <Bar 
+                    dataKey="movements" 
+                    name="Movimientos" 
+                    fill="#003F66" 
+                    barSize={50}
+                    radius={[4, 4, 0, 0]}
+                  />
+                </BarChart>
+              </ResponsiveContainer>
+              
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+                <Button 
+                  component={Link}
+                  to="/admin/reports" 
+                  color="primary"
+                >
+                  Ver Reporte Completo
                 </Button>
-              </CardContent>
-            </Card>
-          </Box>
-        </Container>
-      </Box>
-
-      <Box sx={{ py: 6, bgcolor: '#f9f9f9', position: 'relative' }}>
-        <Container maxWidth="lg">
-          <Typography 
-            variant="h3" 
-            align="center" 
-            gutterBottom 
-            fontWeight="bold"
-            sx={{ mb: 6, color: '#002A45' }}
-          >
-            Lo que dicen nuestros clientes
-          </Typography>
-          
-          <Box sx={{ position: 'relative', px: { xs: 0, md: 5 } }}>
-            <Slider {...testimonialSettings}>
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${lauraImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center top'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={lauraImageUrl}
-                      >
-                        LC
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Laura Campos</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2023</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "Abrir mi cuenta fue increíblemente rápido y la app es muy fácil de usar. ¡El mejor banco digital!"
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
               </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+        
+        {/* Componente 4: Log de Actividad Reciente */}
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <Paper elevation={1} sx={{ p: 3, borderRadius: 2 }}>
+              <Typography variant="h6" fontWeight="bold" sx={{ mb: 3 }}>
+                Actividad Reciente del Sistema
+              </Typography>
               
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${marcoImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={marcoImageUrl}
-                      >
-                        MA
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Marco Antonio</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2022</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "La atención al cliente es excepcional. Resolvieron mi problema en minutos. Muy recomendado."
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
-              </Box>
+              <List>
+                {recentActivities.map((activity, index) => (
+                  <React.Fragment key={activity.id}>
+                    <ListItem alignItems="flex-start">
+                      <ListItemAvatar>
+                        <Avatar 
+                          sx={{ 
+                            bgcolor: activity.status === 'success' ? 'success.light' : 'warning.light',
+                            color: activity.status === 'success' ? 'success.dark' : 'warning.dark'
+                          }}
+                        >
+                          {activity.status === 'success' ? <CheckCircleIcon /> : <WarningIcon />}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={activity.action}
+                        secondary={
+                          <>
+                            <Typography component="span" variant="body2" color="text.primary">
+                              {activity.details}
+                            </Typography>
+                            {" — "}
+                            <Typography component="span" variant="body2" color="text.secondary">
+                              {activity.timestamp}
+                            </Typography>
+                          </>
+                        }
+                      />
+                      <ListItemSecondaryAction>
+                        <Tooltip title="Ver detalles">
+                          <IconButton edge="end" aria-label="ver detalles">
+                            <InfoIcon />
+                          </IconButton>
+                        </Tooltip>
+                      </ListItemSecondaryAction>
+                    </ListItem>
+                    {index < recentActivities.length - 1 && <Divider variant="inset" component="li" />}
+                  </React.Fragment>
+                ))}
+              </List>
               
-              <Box sx={{ px: 2 }}>
-                <TestimonialCard elevation={3}>
-                  <Box 
-                    sx={{ 
-                      height: 200, 
-                      backgroundImage: `url(${carlosImageUrl})`,
-                      backgroundSize: 'cover',
-                      backgroundPosition: 'center'
-                    }}
-                  />
-                  <CardContent sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                      <Avatar 
-                        sx={{ bgcolor: '#FFD915', mr: 2, width: 50, height: 50 }}
-                        src={carlosImageUrl}
-                      >
-                        CP
-                      </Avatar>
-                      <Box>
-                        <Typography variant="h6" fontWeight="bold">Carlos Pérez</Typography>
-                        <Typography variant="body2" color="text.secondary">Cliente desde 2021</Typography>
-                      </Box>
-                    </Box>
-                    <Typography variant="body1" fontStyle="italic">
-                      "Las inversiones con Bank CCI han sido las mejores decisiones financieras que he tomado. Excelente asesoramiento."
-                    </Typography>
-                  </CardContent>
-                </TestimonialCard>
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 2 }}>
+                <Button 
+                  variant="outlined" 
+                  component={Link}
+                  to="/admin/logs"
+                >
+                  Ver Todo el Historial
+                </Button>
               </Box>
-            </Slider>
-          </Box>
-        </Container>
-      </Box>
-
-      <Box 
-        sx={{ 
-          bgcolor: '#011B2F', 
-          color: 'white', 
-          py: 8, 
-          textAlign: 'center',
-          backgroundImage: 'linear-gradient(to right, #011B2F, #003F66)'
-        }}
-      >
-        <Container maxWidth="md">
-          <Typography variant="h3" fontWeight="bold" gutterBottom>
-            ¿Listo para empezar?
-          </Typography>
-          <Typography variant="h6" sx={{ mb: 5, maxWidth: '700px', mx: 'auto' }}>
-            Únete a la nueva era de la banca y descubre por qué miles de personas confían en Bank CCI cada día.
-          </Typography>
-          <Button 
-            component={RouterLink}
-            to="/auth"
-            variant="contained" 
-            size="large"
-            sx={{
-              bgcolor: '#FFD915',
-              color: '#011B2F',
-              py: 2,
-              px: 5,
-              fontSize: '1.2rem',
-              fontWeight: 'bold',
-              '&:hover': { 
-                bgcolor: '#FFD358',
-                transform: 'scale(1.05)'
-              },
-              transition: 'all 0.3s',
-              boxShadow: '0 4px 15px rgba(255,217,21,0.4)'
-            }}
-          >
-            Únete a nuestro imperio
-          </Button>
-        </Container>
-      </Box>
+            </Paper>
+          </Grid>
+        </Grid>
+      </Container>
     </Box>
   );
 };
