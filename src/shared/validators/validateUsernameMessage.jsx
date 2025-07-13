@@ -1,1 +1,0 @@
-export const validateUsernameMessage = "El nombre de usuario debe tener al menos 3 caracteres y solo puede contener letras, números, guiones y guiones bajos";

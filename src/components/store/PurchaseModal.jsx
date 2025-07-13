@@ -34,7 +34,6 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
 
   // Este efecto solo se ejecuta cuando el modal se abre (no en cada render)
   useEffect(() => {
-    // Solo cargar cuentas una vez cuando el modal se abre
     if (open && !accountsLoaded) {
       const loadAccounts = async () => {
         await fetchUserAccounts();
@@ -42,11 +41,9 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
       };
       loadAccounts();
       
-      // Resetear mensaje de éxito si existe
       setSuccessMessage && setSuccessMessage('');
     }
     
-    // Cuando se cierra el modal, reseteamos el flag para permitir cargar cuentas nuevamente
     if (!open) {
       setAccountsLoaded(false);
     }
@@ -54,7 +51,7 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
 
   // Seleccionar la primera cuenta cuando se cargan las cuentas
   useEffect(() => {
-    if (accounts.length > 0 && !selectedAccountId) {
+    if (accounts && accounts.length > 0 && !selectedAccountId) {
       setSelectedAccountId(accounts[0].uid);
     }
   }, [accounts, selectedAccountId]);
@@ -64,18 +61,17 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
     
     const result = await purchaseProduct(product.uid, selectedAccountId);
     if (result) {
-      // Give the user time to see the success message before closing
       setTimeout(() => {
         onPurchaseComplete();
       }, 1500);
     }
   };
 
-  // Find the selected account
-  const selectedAccount = accounts.find(acc => acc.uid === selectedAccountId);
+  // ✅ [SOLUCIÓN] Se asegura de que 'accounts' sea siempre un array antes de usar .find()
+  const selectedAccount = (accounts || []).find(acc => acc.uid === selectedAccountId);
   
-  // Check if account has sufficient funds
-  const hasSufficientFunds = selectedAccount && product && selectedAccount.balance >= product.price;
+  // Esta variable es solo para la alerta visual, no para deshabilitar el botón.
+  const hasInsufficientFunds = selectedAccount && product && selectedAccount.balance < product.price;
 
   return (
     <Dialog 
@@ -187,13 +183,13 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
               <Alert severity="error" sx={{ mb: 2 }}>
                 {accountsError}
               </Alert>
-            ) : accounts.length === 0 ? (
+            ) : accounts && accounts.length === 0 ? (
               <Alert severity="warning" sx={{ mb: 2 }}>
                 No tienes cuentas disponibles. Por favor contacta con un administrador.
               </Alert>
             ) : (
               <>
-                <FormControl fullWidth sx={{ mb: 3 }}>
+                <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel id="account-select-label">Cuenta</InputLabel>
                   <Select
                     labelId="account-select-label"
@@ -208,7 +204,7 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
                     }
                     disabled={purchaseLoading}
                   >
-                    {accounts.map(account => (
+                    {(accounts || []).map(account => (
                       <MenuItem key={account.uid} value={account.uid}>
                         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
                           <Typography>
@@ -218,7 +214,7 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
                             variant="subtitle2" 
                             sx={{ 
                               fontWeight: 'bold',
-                              color: account.balance >= (product?.price || 0) ? 'success.main' : 'error.main'
+                              color: product && account.balance >= product.price ? 'success.main' : 'error.main'
                             }}
                           >
                             Q{account.balance.toFixed(2)}
@@ -229,9 +225,10 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
                   </Select>
                 </FormControl>
 
-                {selectedAccount && !hasSufficientFunds && (
-                  <Alert severity="error" sx={{ mb: 2 }}>
-                    La cuenta seleccionada no tiene fondos suficientes para esta compra.
+                {/* ✨ [MEJORA UX] Alerta visual si no hay fondos suficientes */}
+                {hasInsufficientFunds && (
+                  <Alert severity="warning" sx={{ mb: 2 }}>
+                    La cuenta seleccionada no tiene fondos suficientes. La transacción podría ser rechazada por el sistema.
                   </Alert>
                 )}
 
@@ -263,9 +260,9 @@ const PurchaseModal = ({ open, onClose, product, onPurchaseComplete }) => {
               disabled={
                 purchaseLoading || 
                 accountsLoading || 
+                !accounts ||
                 accounts.length === 0 || 
-                !selectedAccountId ||
-                !hasSufficientFunds
+                !selectedAccountId
               }
               startIcon={purchaseLoading ? <CircularProgress size={20} color="inherit" /> : null}
             >

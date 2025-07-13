@@ -47,9 +47,9 @@ export const updateMe = async (data) => {
     if (data.phone && data.phone.trim() !== '') cleanData.phone = data.phone.trim();
     if (data.workName && data.workName.trim() !== '') cleanData.workName = data.workName.trim();
     
-    if (data.monthlyIncome) {
+    if (data.monthlyIncome !== undefined && data.monthlyIncome !== null && data.monthlyIncome !== '') {
         const numValue = Number(data.monthlyIncome);
-        if (!isNaN(numValue) && numValue > 0) {
+        if (!isNaN(numValue)) { 
             cleanData.monthlyIncome = numValue;
         }
     }
