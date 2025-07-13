@@ -1,1 +1,2 @@
-export { ClientPage } from "./ClientPage.jsx";
+export { ClientPage } from './ClientPage';
+export { StoreProductsPage } from './StoreProductsPage';
