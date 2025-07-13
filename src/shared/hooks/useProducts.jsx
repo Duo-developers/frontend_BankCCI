@@ -1,102 +1,106 @@
 import { useState, useEffect, useCallback } from 'react';
-import { getProducts, getProductById, createProduct, updateProduct, deleteProduct } from '../../services/api';
+import { getProducts, deleteProduct } from '../../services/api';
+import toast from 'react-hot-toast';
 
 export const useProducts = () => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
-  // Usar useCallback para mantener la referencia estable entre renderizados
   const fetchProducts = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const response = await getProducts();
-      setProducts(response.data);
-      setError(null);
+      setProducts(response.data || []);
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al cargar productos');
       console.error('Error fetching products:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, []); // Sin dependencias para mantener la función estable
-
-  const fetchProductById = useCallback(async (productId) => {
-    setLoading(true);
-    try {
-      const response = await getProductById(productId);
-      setSelectedProduct(response.data);
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al obtener el producto');
-      console.error('Error fetching product:', err);
-      return null;
+      setError('Error al cargar los productos. Por favor, inténtelo de nuevo.');
+      toast.error('Error al cargar los productos');
     } finally {
       setLoading(false);
     }
   }, []);
 
-  const handleCreateProduct = useCallback(async (productData) => {
-    setLoading(true);
-    try {
-      const response = await createProduct(productData);
-      setProducts(prev => [...prev, response.data]);
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear producto');
-      console.error('Error creating product:', err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleUpdateProduct = useCallback(async (productId, productData) => {
-    setLoading(true);
-    try {
-      const response = await updateProduct(productId, productData);
-      setProducts(prev => prev.map(p => p.uid === productId ? response.data : p));
-      return response.data;
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al actualizar producto');
-      console.error('Error updating product:', err);
-      return null;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  const handleDeleteProduct = useCallback(async (productId) => {
-    setLoading(true);
-    try {
-      await deleteProduct(productId);
-      setProducts(prev => prev.filter(p => p.uid !== productId));
-      return true;
-    } catch (err) {
-      setError(err.response?.data?.message || 'Error al eliminar producto');
-      console.error('Error deleting product:', err);
-      return false;
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  // Efecto para cargar productos al montar el componente
   useEffect(() => {
     fetchProducts();
-  }, [fetchProducts]); // Ahora es seguro incluir fetchProducts porque es estable
+  }, [fetchProducts]);
+
+  const handleOpenModal = (product = null) => {
+    setSelectedProduct(product);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedProduct(null);
+    setModalOpen(false);
+    fetchProducts(); // Recargar los productos al cerrar el modal
+  };
+
+  const handleOpenDeleteDialog = (productId) => {
+    const product = products.find(p => p.uid === productId);
+    if (product) {
+      setProductToDelete({
+        id: productId,
+        name: product.name
+      });
+      setDeleteDialogOpen(true);
+    }
+  };
+
+  const handleCloseDeleteDialog = () => {
+    setProductToDelete(null);
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteProduct = async (productId) => {
+    setIsDeleting(true);
+    try {
+      await deleteProduct(productId);
+      toast.success('Producto eliminado con éxito');
+      fetchProducts(); // Recargar productos después de eliminar
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      toast.error('Error al eliminar el producto');
+    } finally {
+      setIsDeleting(false);
+      handleCloseDeleteDialog();
+    }
+  };
+
+  const handleSearchChange = (value) => {
+    setSearchTerm(value);
+  };
+
+  // Filtrar productos basados en el término de búsqueda
+  const filteredProducts = searchTerm 
+    ? products.filter(product => 
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.descripcion.toLowerCase().includes(searchTerm.toLowerCase()))
+    : products;
 
   return {
-    products,
+    products: filteredProducts,
     loading,
     error,
     selectedProduct,
+    modalOpen,
+    deleteDialogOpen,
+    productToDelete,
+    isDeleting,
+    searchTerm,
     fetchProducts,
-    getProductById: fetchProductById,
-    createProduct: handleCreateProduct,
-    updateProduct: handleUpdateProduct,
-    deleteProduct: handleDeleteProduct,
-    setSelectedProduct
+    handleOpenModal,
+    handleCloseModal,
+    handleOpenDeleteDialog,
+    handleCloseDeleteDialog,
+    handleDeleteProduct,
+    handleSearchChange
   };
 };

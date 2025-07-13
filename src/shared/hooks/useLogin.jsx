@@ -33,6 +33,7 @@ export const useLogin = () => {
                     } else {
                         navigate('/client');
                     }
+                    window.location.reload();
                 } else {
                     toast.error('No se pudo obtener la información del usuario.');
                 }

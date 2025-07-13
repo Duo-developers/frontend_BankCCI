@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import { getUsers, deleteUser } from '../../services/api';
 import toast from 'react-hot-toast';
 
-export const useUserManagement = (openNewUserDialog) => {
+export const useUserManagement = (openNewUserDialog = false) => {
     const [users, setUsers] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -10,6 +10,8 @@ export const useUserManagement = (openNewUserDialog) => {
     const [isFormOpen, setIsFormOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
 
     const fetchUsers = useCallback(async () => {
         setIsLoading(true);
@@ -40,16 +42,17 @@ export const useUserManagement = (openNewUserDialog) => {
         }
     }, [openNewUserDialog]);
 
-
     const handleOpenForm = (user = null) => {
         setSelectedUser(user);
         setIsFormOpen(true);
     };
 
-    const handleCloseForm = () => {
+    const handleCloseForm = (shouldRefresh = false) => {
         setSelectedUser(null);
         setIsFormOpen(false);
-        fetchUsers();
+        if (shouldRefresh) {
+            fetchUsers();
+        }
     };
 
     const handleOpenConfirm = (user) => {
@@ -64,6 +67,8 @@ export const useUserManagement = (openNewUserDialog) => {
 
     const handleDeleteUser = async () => {
         if (!userToDelete) return;
+        
+        setIsDeleting(true);
         try {
             await deleteUser(userToDelete.uid);
             toast.success(`Usuario ${userToDelete.username} desactivado con éxito.`);
@@ -71,22 +76,38 @@ export const useUserManagement = (openNewUserDialog) => {
         } catch (err) {
             toast.error(err.response?.data?.message || 'Error al desactivar el usuario.');
         } finally {
+            setIsDeleting(false);
             handleCloseConfirm();
         }
     };
 
+    const handleSearchChange = (value) => {
+        setSearchTerm(value);
+    };
+
+    // Filtrar usuarios basados en el término de búsqueda
+    const filteredUsers = searchTerm 
+        ? users.filter(user => 
+            user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            user.email.toLowerCase().includes(searchTerm.toLowerCase()))
+        : users;
+
     return {
-        users,
+        users: filteredUsers,
         isLoading,
         error,
         selectedUser,
         isFormOpen,
         isConfirmOpen,
         userToDelete,
+        isDeleting,
+        searchTerm,
         handleOpenForm,
         handleCloseForm,
         handleOpenConfirm,
         handleCloseConfirm,
-        handleDeleteUser
+        handleDeleteUser,
+        handleSearchChange
     };
 };
