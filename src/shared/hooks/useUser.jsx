@@ -31,9 +31,10 @@ export const useUser = () => {
             }
           } catch (e) {
             console.error("Error decoding token:", e);
-            setIsLoggedIn(!!token); 
-            setUsername(user.username || '');
-            setUserRole(user.role || '');
+            localStorage.removeItem('usuario');
+            setIsLoggedIn(false);
+            setUsername('');
+            setUserRole('');
           }
         } else {
           setIsLoggedIn(false);

@@ -1,1 +1,0 @@
-export const validateEmailMessage = 'Ingresa un correo electrónico válido';

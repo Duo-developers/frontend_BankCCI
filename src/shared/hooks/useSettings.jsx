@@ -19,6 +19,18 @@ export const useSettings = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [errors, setErrors] = useState({});
 
+    const validatePassword = (password) => {
+        if (!password) return false;
+        const requirements = [
+            password.length >= 6,
+            /[a-z]/.test(password),
+            /[A-Z]/.test(password),
+            /\d/.test(password),
+            /[!@#$%^&*(),.?":{}|<>]/.test(password)
+        ];
+        return requirements.every(req => req);
+    };
+
     const fetchUser = useCallback(async () => {
         setIsLoading(true);
         try {
@@ -50,13 +62,26 @@ export const useSettings = () => {
         fetchUser();
     }, [fetchUser]);
 
-    const handleChange = (setState) => (e) => {
+    // Función mejorada para manejar cambios en los formularios
+    const handleChange = useCallback((setState) => (e) => {
+        // Verificación de seguridad para el evento
+        if (!e || !e.target) {
+            console.warn("handleChange recibió un evento inválido:", e);
+            return;
+        }
+
         const { name, value } = e.target;
         setState(prev => ({ ...prev, [name]: value }));
+        
+        // Limpia el error específico si existe
         if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: null }));
+            setErrors(prev => {
+                const newErrors = { ...prev };
+                delete newErrors[name];
+                return newErrors;
+            });
         }
-    };
+    }, [errors]);
 
     const handleProfileSubmit = async (e) => {
         e.preventDefault();
@@ -76,8 +101,9 @@ export const useSettings = () => {
     const handlePasswordSubmit = async (e) => {
         e.preventDefault();
         const newErrors = {};
-        if (passwordData.newPassword.length < 6) {
-            newErrors.newPassword = 'La contraseña debe tener al menos 6 caracteres.';
+        
+        if (!validatePassword(passwordData.newPassword)) {
+            newErrors.newPassword = 'La contraseña debe tener al menos 6 caracteres, incluir mayúsculas, minúsculas, números y caracteres especiales.';
         }
         if (passwordData.newPassword !== passwordData.confirmNewPassword) {
             newErrors.confirmNewPassword = 'Las contraseñas no coinciden.';
@@ -102,14 +128,23 @@ export const useSettings = () => {
         }
     };
 
+    // Creamos funciones específicas para cada formulario
+    const handleProfileChange = useCallback((e) => {
+        handleChange(setProfileData)(e);
+    }, [handleChange]);
+
+    const handlePasswordChange = useCallback((e) => {
+        handleChange(setPasswordData)(e);
+    }, [handleChange]);
+
     return {
         profileData,
         passwordData,
         isLoading,
         isSubmitting,
         errors,
-        handleProfileChange: handleChange(setProfileData),
-        handlePasswordChange: handleChange(setPasswordData),
+        handleProfileChange,
+        handlePasswordChange,
         handleProfileSubmit,
         handlePasswordSubmit,
     };

@@ -1,2 +1,2 @@
-export * from './UserManagementPage';
-export * from '../../../components/UserForm';
+export { UserManagementPage } from './UserManagementPage';
+export { UserForm } from '../../../components/UserForm';

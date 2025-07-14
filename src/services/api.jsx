@@ -47,9 +47,9 @@ export const updateMe = async (data) => {
     if (data.phone && data.phone.trim() !== '') cleanData.phone = data.phone.trim();
     if (data.workName && data.workName.trim() !== '') cleanData.workName = data.workName.trim();
     
-    if (data.monthlyIncome) {
+    if (data.monthlyIncome !== undefined && data.monthlyIncome !== null && data.monthlyIncome !== '') {
         const numValue = Number(data.monthlyIncome);
-        if (!isNaN(numValue) && numValue > 0) {
+        if (!isNaN(numValue)) { 
             cleanData.monthlyIncome = numValue;
         }
     }
@@ -107,4 +107,59 @@ export const updateUser = async (uid, data) => {
 
 export const deleteUser = async (uid) => {
     return await apiClient.delete(`/user/${uid}`);
+}
+
+// Products
+export const getProducts = async () => {
+    return await apiClient.get('/product/getProducts');
+}
+
+export const getProductById = async (id) => {
+    return await apiClient.get(`/product/getProducts/${id}`);
+}
+
+export const createProduct = async (data) => {
+    return await apiClient.post('/product/createProduct', data);
+}
+
+export const updateProduct = async (id, data) => {
+    return await apiClient.put(`/product/updateProduct/${id}`, data);
+}
+
+export const deleteProduct = async (id) => {
+    return await apiClient.delete(`/product/deleteProduct/${id}`);
+}
+
+// Accounts
+export const getUserAccounts = async () => {
+    return await apiClient.get('/account/getMyAccounts');
+}
+
+export const getAllAccounts = async () => {
+    return await apiClient.get('/account/getAccounts');
+}
+
+export const createAccount = async (data) => {
+    return await apiClient.post('/account/createAccount', data);
+}
+
+export const deleteAccount = async (id) => {
+    return await apiClient.delete(`/account/deleteAccount/${id}`);
+}
+
+// Transactions
+export const getAccountSummary = async (accountId) => {
+    return await apiClient.get(`/transaction/summary/${accountId}`);
+}
+
+export const makeDeposit = async (data) => {
+    return await apiClient.post('/transaction/deposit', data);
+}
+
+export const makeTransfer = async (data) => {
+    return await apiClient.post('/transaction/transfer', data);
+}
+
+export const purchaseProduct = async (data) => {
+    return await apiClient.post('/transaction/purchase', data);
 }
