@@ -10,6 +10,8 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import { formatAmount } from '../../utils/formatter';
+import { CurrencyConversionSection } from '../../components/client/account';
+
 
 export const AccountDetailPage = () => {
   const navigate = useNavigate();

@@ -163,3 +163,7 @@ export const makeTransfer = async (data) => {
 export const purchaseProduct = async (data) => {
     return await apiClient.post('/transaction/purchase', data);
 }
+
+export const convertCurrency = async (from, to, amount) => {
+    return await apiClient.get(`/currency/convert?from=${from}&to=${to}&amount=${amount}`);
+};

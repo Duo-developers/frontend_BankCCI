@@ -15,7 +15,7 @@ import { SettingsPage } from "./pages/settings";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import { UserManagementPage } from "./pages/adminPage/userManagement"; 
 import { PurchaseHistoryPage } from "./pages/ClientPage/PurchaseHistoryPage.jsx";
-
+import { CurrencyConverterPage} from "./pages/ClientPage/CurrencyConverterPage.jsx";
 
 export const routes = [
   {path: "/*", element: <HomePage />},
@@ -34,5 +34,6 @@ export const routes = [
   {path: "/admin/accounts", element: <ProtectedRoute element={<AccountManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
   {path: "/admin/users", element: <ProtectedRoute element={<UserManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
   {path: "/admin/users/new", element: <ProtectedRoute element={<UserManagementPage openNewUserDialog />} requiredRoles={["ADMIN_ROLE"]} />},
-  {path: "/settings", element: <ProtectedRoute element={<SettingsPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />}
+  {path: "/settings", element: <ProtectedRoute element={<SettingsPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />},
+  {path: "/currency-converter", element: <ProtectedRoute element={<CurrencyConverterPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />},
 ];
