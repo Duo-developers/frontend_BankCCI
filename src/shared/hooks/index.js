@@ -8,3 +8,4 @@ export { useAccounts } from './useAccounts';
 export { useTransactions } from './useTransactions';
 export { useTransactionHistory } from './useTransactionHistory';
 export { useCurrencyConverter } from './useCurrencyConverter';
+export { useFavorites } from './useFavorites';

@@ -167,3 +167,19 @@ export const purchaseProduct = async (data) => {
 export const convertCurrency = async (from, to, amount) => {
     return await apiClient.get(`/currency/convert?from=${from}&to=${to}&amount=${amount}`);
 };
+
+// Favorites
+export const getFavorites = async () => {
+    return await apiClient.get('/user/me/favorites');
+}
+
+// CORREGIDO: La función ahora espera 'accountId'.
+export const removeFavorite = async (accountId) => {
+    return await apiClient.delete(`/user/me/favorites/${accountId}`);
+}
+
+// CORREGIDO: El cuerpo de la solicitud ahora debe contener 'accountNumber'.
+export const addFavorite = async (data) => {
+    // data debe ser { accountNumber: '...', alias: '...' }
+    return await apiClient.post('/user/me/favorites', data);
+}

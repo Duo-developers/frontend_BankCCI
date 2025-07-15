@@ -3,7 +3,10 @@ import {
     Box, Container, CircularProgress, Divider
 } from '@mui/material';
 import { useSettings } from '../../shared/hooks/useSettings';
+import { useFavorites } from '../../shared/hooks/useFavorites'; // Importa el nuevo hook
 import { SettingsHeader, ProfileForm, PasswordForm } from '../../components/settings';
+import { AddFavoriteForm } from '../../components/settings/Favorites/AddFavoriteForm'; 
+import { FavoritesList } from '../../components/settings/Favorites/FavoritesList'; // Importa los componentes de favoritos
 
 export const SettingsPage = () => {
     const {
@@ -17,6 +20,14 @@ export const SettingsPage = () => {
         handleProfileSubmit,
         handlePasswordSubmit,
     } = useSettings();
+
+    // Usa el hook de favoritos
+    const {
+        favorites,
+        isLoading: favoritesLoading,
+        addFavorite,
+        removeFavorite
+    } = useFavorites();
 
     if (isLoading) {
         return (
@@ -46,6 +57,19 @@ export const SettingsPage = () => {
                 handlePasswordChange={handlePasswordChange}
                 handlePasswordSubmit={handlePasswordSubmit}
             />
+
+            <Divider sx={{ my: 6 }} />
+
+            {/* Sección de Favoritos */}
+            <FavoritesList
+                favorites={favorites}
+                onRemove={removeFavorite}
+            />
+            <AddFavoriteForm
+                onAddFavorite={addFavorite}
+                isLoading={favoritesLoading}
+            />
+
         </Container>
     );
 };
