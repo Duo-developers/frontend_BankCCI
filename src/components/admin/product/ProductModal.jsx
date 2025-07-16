@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import CategoryIcon from '@mui/icons-material/Category';
-import { createProduct, updateProduct } from '../../services/api';
+import { createProduct, updateProduct } from '../../../services/api';
 import toast from 'react-hot-toast';
 
 export const ProductModal = ({ open, onClose, product }) => {

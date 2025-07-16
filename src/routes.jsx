@@ -15,6 +15,11 @@ import { SettingsPage } from "./pages/settings";
 import { ProtectedRoute } from "./components/ProtectedRoute.jsx";
 import { UserManagementPage } from "./pages/adminPage/userManagement"; 
 import { PurchaseHistoryPage } from "./pages/ClientPage/PurchaseHistoryPage.jsx";
+import { CurrencyConverterPage} from "./pages/ClientPage/CurrencyConverterPage.jsx";
+import { DepositManagementPage } from "./pages/adminPage/DepositManagementPage.jsx"; // Nueva importación
+import { TransactionReportPage } from "./pages/adminPage/TransactionReportPage.jsx"; // Nueva importación
+import { TransfersPage } from "./pages/ClientPage/TransfersPage"; // <-- Añade esta importación
+
 
 
 export const routes = [
@@ -25,6 +30,7 @@ export const routes = [
   {path: "/privacy-policy", element: <PrivacyPolicyPage />},
   {path: "/terms-of-service", element: <TermsOfServicePage />},
   {path: "/client", element: <ProtectedRoute element={<ClientPage />} requiredRoles={["USER_ROLE"]} />},
+  {path: "/transfers", element: <ProtectedRoute element={<TransfersPage />} requiredRoles={["USER_ROLE"]} />}, // <-- Añade o actualiza esta ruta
   {path: "/store", element: <ProtectedRoute element={<StoreProductsPage />} requiredRoles={["USER_ROLE"]} />},
   {path: "/purchase-history", element: <ProtectedRoute element={<PurchaseHistoryPage />} requiredRoles={["USER_ROLE"]} />},
   {path: "/accounts", element: <ProtectedRoute element={<AccountsPage />} requiredRoles={["USER_ROLE"]} />},
@@ -33,6 +39,11 @@ export const routes = [
   {path: "/admin/products", element: <ProtectedRoute element={<ProductManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
   {path: "/admin/accounts", element: <ProtectedRoute element={<AccountManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
   {path: "/admin/users", element: <ProtectedRoute element={<UserManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
+  {path: "/admin/deposits", element: <ProtectedRoute element={<DepositManagementPage />} requiredRoles={["ADMIN_ROLE"]} />},
+  {path: "/admin/reports/transaction-count", element: <ProtectedRoute element={<TransactionReportPage />} requiredRoles={["ADMIN_ROLE"]} />},
   {path: "/admin/users/new", element: <ProtectedRoute element={<UserManagementPage openNewUserDialog />} requiredRoles={["ADMIN_ROLE"]} />},
-  {path: "/settings", element: <ProtectedRoute element={<SettingsPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />}
+  {path: "/profile", element: <ProtectedRoute element={<SettingsPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />},
+  {path: "/currency-converter", element: <ProtectedRoute element={<CurrencyConverterPage />} requiredRoles={["USER_ROLE", "ADMIN_ROLE"]} />},
+
+
 ];

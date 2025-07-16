@@ -16,7 +16,7 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import InventoryIcon from '@mui/icons-material/Inventory';
 import AssessmentIcon from '@mui/icons-material/Assessment';
-import SettingsIcon from '@mui/icons-material/Settings';
+import SettingsIcon from '@mui/icons-material/Person';
 
 export const Navbar = () => {
   const { userRole, isLoggedIn, username, logout } = useUser();
@@ -39,7 +39,7 @@ export const Navbar = () => {
   }, [logout, navigate]);
   
   const handleGoToSettings = useCallback(() => {
-    navigate('/settings');
+    navigate('/profile');
     handleMenuClose();
   }, [navigate]);
   
@@ -99,7 +99,7 @@ export const Navbar = () => {
               <Button color="inherit" component={Link} to="/admin/products" startIcon={<InventoryIcon />}>
                 Gestión de Productos
               </Button>
-              <Button color="inherit" component={Link} to="/admin/reports" startIcon={<AssessmentIcon />}>
+              <Button color="inherit" component={Link} to="/admin/reports/transaction-count" startIcon={<AssessmentIcon />}>
                 Reportes
               </Button>
             </>
@@ -113,9 +113,6 @@ export const Navbar = () => {
               </Button>
               <Button color="inherit" component={Link} to="/store" startIcon={<ShoppingCartIcon />}>
                 Tienda
-              </Button>
-              <Button color="inherit" component={Link} to="/profile" startIcon={<PersonIcon />}>
-                Mi Perfil
               </Button>
             </>
           ) : (
@@ -172,7 +169,7 @@ export const Navbar = () => {
                   aria-label="Ir a configuración"
                 >
                   <SettingsIcon sx={{ mr: 1.5 }} />
-                  Settings
+                  Profile
                 </MenuItem>
                 <MenuItem 
                   onClick={handleLogout}

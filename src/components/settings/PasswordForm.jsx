@@ -1,9 +1,9 @@
 import React from 'react';
 import {
-  Box, Typography, Paper, Grid, TextField, Button,
-  CircularProgress
+  Box, Typography, TextField, Button, CircularProgress, Grid
 } from '@mui/material';
 import { PasswordStrengthIndicator } from '../common/PasswordStrengthIndicator';
+import LockResetIcon from '@mui/icons-material/LockReset';
 
 const PasswordForm = ({ 
   passwordData, 
@@ -13,9 +13,9 @@ const PasswordForm = ({
   handlePasswordSubmit 
 }) => {
   return (
-    <Paper elevation={2} sx={{ p: { xs: 2, md: 4 } }}>
-      <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
-        Cambiar Contraseña
+    <>
+      <Typography variant="subtitle1" color="text.secondary" paragraph>
+        Para actualizar su contraseña, primero ingrese la actual y luego la nueva. La contraseña debe tener al menos 8 caracteres.
       </Typography>
       
       <Box component="form" onSubmit={handlePasswordSubmit} noValidate>
@@ -45,7 +45,9 @@ const PasswordForm = ({
               helperText={errors.newPassword} 
             />
             {passwordData.newPassword && (
-              <PasswordStrengthIndicator password={passwordData.newPassword} />
+              <Box sx={{ mt: 1 }}>
+                <PasswordStrengthIndicator password={passwordData.newPassword} />
+              </Box>
             )}
           </Grid>
           
@@ -64,16 +66,26 @@ const PasswordForm = ({
           </Grid>
         </Grid>
         
-        <Button 
-          type="submit" 
-          variant="contained" 
-          sx={{ mt: 3, py: 1.5 }} 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? <CircularProgress size={24} /> : 'Actualizar Contraseña'}
-        </Button>
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="secondary"
+            size="large"
+            startIcon={isSubmitting ? <CircularProgress size={20} /> : <LockResetIcon />}
+            disabled={isSubmitting}
+            sx={{ 
+              py: 1.5, 
+              px: 4, 
+              borderRadius: 2,
+              boxShadow: 3
+            }} 
+          >
+            {isSubmitting ? 'Actualizando...' : 'Actualizar Contraseña'}
+          </Button>
+        </Box>
       </Box>
-    </Paper>
+    </>
   );
 };
 

@@ -1,9 +1,10 @@
 import React from 'react';
 import {
-  Box, Typography, Paper, Grid, TextField, Button,
-  CircularProgress, Tooltip
+  Box, Typography, TextField, Button, CircularProgress, Tooltip,
+  Grid // Use standard Grid instead of Unstable_Grid2
 } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
+import SaveIcon from '@mui/icons-material/Save';
 
 const ProfileForm = ({ 
   profileData, 
@@ -12,34 +13,36 @@ const ProfileForm = ({
   handleProfileSubmit 
 }) => {
   return (
-    <Paper elevation={2} sx={{ p: { xs: 2, md: 4 }, mt: 4 }}>
-      <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
-        Información Personal
+    <>
+      <Typography variant="subtitle1" color="text.secondary" paragraph>
+        Actualice su información personal. Los campos con * son obligatorios.
       </Typography>
       
       <Box component="form" onSubmit={handleProfileSubmit} noValidate>
         <Grid container spacing={3} sx={{ mt: 1 }}>
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="Nombre Completo" 
               name="name" 
               value={profileData.name} 
-              onChange={handleProfileChange} 
+              onChange={handleProfileChange}
+              required
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="Nombre de Usuario" 
               name="username" 
               value={profileData.username} 
-              onChange={handleProfileChange} 
+              onChange={handleProfileChange}
+              required
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="DPI" 
@@ -56,7 +59,7 @@ const ProfileForm = ({
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="Email" 
@@ -80,51 +83,68 @@ const ProfileForm = ({
               name="address" 
               value={profileData.address} 
               onChange={handleProfileChange} 
+              required
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="Teléfono" 
               name="phone" 
               value={profileData.phone} 
-              onChange={handleProfileChange} 
+              onChange={handleProfileChange}
+              required 
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               label="Lugar de Trabajo" 
               name="workName" 
               value={profileData.workName} 
               onChange={handleProfileChange} 
+              required
             />
           </Grid>
           
-          <Grid item xs={12} sm={6}>
+          <Grid item xs={12} md={6}>
             <TextField 
               fullWidth 
               type="number" 
               label="Ingresos Mensuales" 
               name="monthlyIncome" 
               value={profileData.monthlyIncome} 
-              onChange={handleProfileChange} 
+              onChange={handleProfileChange}
+              InputProps={{
+                startAdornment: <Box component="span" sx={{ mr: 1 }}>Q</Box>
+              }}
+              required
             />
           </Grid>
         </Grid>
         
-        <Button 
-          type="submit" 
-          variant="contained" 
-          sx={{ mt: 3, py: 1.5 }} 
-          disabled={isSubmitting}
-        >
-          {isSubmitting ? <CircularProgress size={24} /> : 'Guardar Cambios de Perfil'}
-        </Button>
+        <Box sx={{ mt: 4, display: 'flex', justifyContent: 'flex-end' }}>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary"
+            size="large"
+            startIcon={isSubmitting ? <CircularProgress size={20} /> : <SaveIcon />}
+            disabled={isSubmitting}
+            sx={{ 
+              py: 1.5, 
+              px: 4, 
+              borderRadius: 2,
+              boxShadow: 3
+            }} 
+          >
+            {isSubmitting ? 'Guardando...' : 'Guardar Cambios'}
+          </Button>
+        </Box>
       </Box>
-    </Paper>
+    </>
   );
 };
 
