@@ -3,7 +3,8 @@ import { Box, Container, Typography, Grid, CircularProgress, Alert } from '@mui/
 import { useUser } from '../../shared/hooks/useUser';
 import { useDashboard } from '../../shared/hooks/useDashboard';
 import { CurrencyConverter } from '../../components/common/CurrencyConverter';
-import { RecentTransactions, QuickActions } from '../../components/client/dashboard';
+import { RecentTransactions } from '../../components/client/transaction';
+import { QuickActions } from '../../components/client/dashboard';
 
 export const ClientPage = () => {
     const { username } = useUser();

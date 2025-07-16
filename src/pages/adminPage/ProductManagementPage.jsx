@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 import { useProducts } from '../../shared/hooks/useProducts';
 import { ProductTable, ProductActionBar, ProductDeleteDialog } from '../../components/admin/product';
-import { ProductModal } from '../../components/admin/ProductModal';
+import { ProductModal } from '../../components/admin/product/ProductModal';
 
 export const ProductManagementPage = () => {
   const {
