@@ -5,10 +5,10 @@ import {
     Button,
     CircularProgress,
     Typography,
-    Paper,
-    Grid // Importación correcta
+    Grid
 } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
+import AddIcon from '@mui/icons-material/Add';
 
 export const AddFavoriteForm = ({ onAddFavorite, isLoading }) => {
     const [accountNumber, setAccountNumber] = useState('');
@@ -25,13 +25,17 @@ export const AddFavoriteForm = ({ onAddFavorite, isLoading }) => {
     };
 
     return (
-        <Paper elevation={2} sx={{ p: { xs: 2, md: 3 }, mt: 4 }}>
-            <Typography variant="h6" component="h3" fontWeight="bold" gutterBottom>
+        <>
+            <Typography variant="h5" component="h2" fontWeight="bold" gutterBottom>
                 Añadir Nueva Cuenta Favorita
             </Typography>
+            
+            <Typography variant="subtitle1" color="text.secondary" paragraph>
+                Agregue cuentas de otros usuarios para realizar transferencias más rápidas.
+            </Typography>
+            
             <Box component="form" onSubmit={handleSubmit} noValidate>
-                {/* CORREGIDO: El prop es 'container', no 'vcontainer' */}
-                <Grid container spacing={2} sx={{ mt: 1 }}>
+                <Grid container spacing={2} sx={{ mt: 2 }}>
                     <Grid item xs={12} md={5}>
                         <TextField
                             fullWidth
@@ -54,20 +58,27 @@ export const AddFavoriteForm = ({ onAddFavorite, isLoading }) => {
                             helperText="Un nombre amigable para identificar esta cuenta"
                         />
                     </Grid>
-                    <Grid item xs={12} md={2} display="flex" alignItems="center">
+                    <Grid item xs={12} md={2} sx={{ display: 'flex', alignItems: 'center' }}>
                         <Button
                             type="submit"
                             fullWidth
                             variant="contained"
+                            color="warning" // Color que coincide con el ícono de estrella en la navegación
+                            size="large"
                             disabled={isLoading || !accountNumber}
-                            startIcon={isLoading ? <CircularProgress size={20} /> : <StarIcon />}
-                            sx={{ py: 1.5 }}
+                            startIcon={isLoading ? <CircularProgress size={20} /> : <AddIcon />}
+                            sx={{ 
+                                py: 1.5,
+                                borderRadius: 2,
+                                boxShadow: 3,
+                                height: '56px' // Para alinear mejor con los campos de texto
+                            }}
                         >
-                            Añadir
+                            {isLoading ? 'Agregando...' : 'Añadir'}
                         </Button>
                     </Grid>
                 </Grid>
             </Box>
-        </Paper>
+        </>
     );
 };

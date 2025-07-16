@@ -152,16 +152,32 @@ export const getAccountSummary = async (accountId) => {
     return await apiClient.get(`/transaction/summary/${accountId}`);
 }
 
-export const makeDeposit = async (data) => {
-    return await apiClient.post('/transaction/deposit', data);
-}
-
 export const makeTransfer = async (data) => {
     return await apiClient.post('/transaction/transfer', data);
 }
 
 export const purchaseProduct = async (data) => {
     return await apiClient.post('/transaction/purchase', data);
+}
+
+export const makeDeposit = async (data) => {
+    return await apiClient.post('/transaction/deposit', data);
+};
+
+export const modifyDeposit = async (data) => {
+    return await apiClient.put('/transaction/deposit/modify', data);
+}
+
+export const revertDeposit = async (transactionId) => {
+    return await apiClient.post('/transaction/deposit/revert', { transactionId });
+}
+
+export const getAccountsByTransactionCount = async (order = 'desc') => {
+    return await apiClient.get(`/transaction/accounts-by-transaction-count?order=${order}`);
+}
+
+export const getAllDeposits = async () => {
+    return await apiClient.get('/transaction/deposits');
 }
 
 export const convertCurrency = async (from, to, amount) => {
@@ -173,13 +189,10 @@ export const getFavorites = async () => {
     return await apiClient.get('/user/me/favorites');
 }
 
-// CORREGIDO: La función ahora espera 'accountId'.
 export const removeFavorite = async (accountId) => {
     return await apiClient.delete(`/user/me/favorites/${accountId}`);
 }
 
-// CORREGIDO: El cuerpo de la solicitud ahora debe contener 'accountNumber'.
 export const addFavorite = async (data) => {
-    // data debe ser { accountNumber: '...', alias: '...' }
     return await apiClient.post('/user/me/favorites', data);
 }
